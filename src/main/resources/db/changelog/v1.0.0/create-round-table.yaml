@@ -1,0 +1,63 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-round-table
+      author: vmc
+      changes:
+        - createTable:
+            tableName: ROUND
+            columns:
+              - column:
+                  name: ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primarykey: true
+                    nullable: false
+              - column:
+                  name: GAME_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CREATED_AT
+                  type: DATETIME
+                  defaultValueDate: "${now}"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CORRECT_MOVIE_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CORRECT_ANSWER
+                  type: BOOLEAN
+        - addForeignKeyConstraint:
+            baseColumnNames: CORRECT_MOVIE_ID
+            baseTableName: ROUND
+            constraintName: FK_ROUND_CORRECT_MOVIE
+            referencedColumnnames: IMDB_ID
+            referencedTableName: MOVIE
+        - addForeignKeyConstraint:
+            baseColumnNames: GAME_ID
+            baseTableName: ROUND
+            constraintName: FK_ROUND_GAME_ID
+            referencedColumnnames: ID
+            referencedTableName: GAME
+
+  - changeSet:
+      id: add-current-game-id-column-at-player
+      author: vmc
+      changes:
+        - addColumn:
+            tablename: GAME
+            columns:
+              - column:
+                  name: CURRENT_ROUND_ID
+                  type: BIGINT
+        - addForeignKeyConstraint:
+            baseColumnNames: CURRENT_ROUND_ID
+            baseTableName: GAME
+            constraintName: FK_GAME_CURRENT_ROUND
+            referencedColumnnames: ID
+            referencedTableName: ROUND

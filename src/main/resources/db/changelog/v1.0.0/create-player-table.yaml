@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-player-table
+      author: vmc
+      changes:
+        - createTable:
+            tablename: PLAYER
+            columns:
+              - column:
+                  name: ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: NAME
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: EMAIL
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false

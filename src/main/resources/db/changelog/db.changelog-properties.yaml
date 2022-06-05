@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - property:
+      name: "now"
+      dbms: "mysql,h2"
+      value: "now()"
+  - property:
+      name: "now"
+      dbms: "postgresql"
+      value: "current_timestamp"
+  - property:
+      name: "now"
+      dbms: "oracle"
+      value: "sysdate"

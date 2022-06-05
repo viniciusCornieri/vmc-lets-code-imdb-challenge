@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-movie-table
+      author: vmc
+      changes:
+        - createTable:
+            tableName: MOVIE
+            columns:
+              - column:
+                  name: IMDB_ID
+                  type: VARCHAR(50)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: TITLE
+                  type: VARCHAR(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: RATING
+                  type: INT

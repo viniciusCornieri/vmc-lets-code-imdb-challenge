@@ -1,0 +1,56 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-movie-round-table
+      author: vmc
+      changes:
+        - createTable:
+            tableName: MOVIE_ROUND
+            columns:
+              - column:
+                  name: ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primarykey: true
+                    nullable: false
+              - column:
+                  name: GAME_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ROUND_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: MOVIE_ID
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: MOVIE_ID
+            baseTableName: MOVIE_ROUND
+            constraintName: FK_MOVIE_ROUND_MOVIE
+            referencedColumnnames: IMDB_ID
+            referencedTableName: MOVIE
+        - addForeignKeyConstraint:
+            baseColumnNames: GAME_ID
+            baseTableName: MOVIE_ROUND
+            constraintName: FK_MOVIE_ROUND_GAME
+            referencedColumnnames: ID
+            referencedTableName: GAME
+        - addForeignKeyConstraint:
+            baseColumnNames: ROUND_ID
+            baseTableName: MOVIE_ROUND
+            constraintName: FK_MOVIE_ROUND_ROUND_ID
+            referencedColumnnames: ID
+            referencedTableName: ROUND
+        - createIndex:
+            tableName: MOVIE_ROUND
+            name: IX_MOVIE_ROUND_GAME_MOVIE
+            columns:
+              - column:
+                  name: GAME_ID
+              - column:
+                  name: MOVIE_ID

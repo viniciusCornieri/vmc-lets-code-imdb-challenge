@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - include:
+      file: "create-movie-table.yaml"
+      relativeToChangelogFile: true
+  - include:
+      file: "create-player-table.yaml"
+      relativeToChangelogFile: true
+  - include:
+      file: "create-game-table.yaml"
+      relativeToChangelogFile: true
+  - include:
+      file: "create-round-table.yaml"
+      relativeToChangelogFile: true
+  - include:
+      file: "create-movie-round-table.yaml"
+      relativeToChangelogFile: true
