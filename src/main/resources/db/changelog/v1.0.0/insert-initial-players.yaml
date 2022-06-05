@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-initial-players
+      author: vmc
+      changes:
+        - insert:
+            tablename: PLAYER
+            columns:
+              - column:
+                  name: NAME
+                  value: "Ready Player One"
+              - column:
+                  name: EMAIL
+                  value: "ready.player@one.com"

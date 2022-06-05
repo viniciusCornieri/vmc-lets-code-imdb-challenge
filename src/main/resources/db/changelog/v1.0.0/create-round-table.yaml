@@ -14,6 +14,11 @@ databaseChangeLog:
                     primarykey: true
                     nullable: false
               - column:
+                  name: ROUND_NUMBER
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
                   name: GAME_ID
                   type: BIGINT
                   constraints:
@@ -25,18 +30,29 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: CORRECT_MOVIE_ID
+                  name: FIRST_MOVIE_OPTION_ID
                   type: BIGINT
                   constraints:
                     nullable: false
               - column:
-                  name: CORRECT_ANSWER
+                  name: SECOND_MOVIE_OPTION_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: WAS_ANSWERED_CORRECTLY
                   type: BOOLEAN
         - addForeignKeyConstraint:
-            baseColumnNames: CORRECT_MOVIE_ID
+            baseColumnNames: FIRST_MOVIE_OPTION_ID
             baseTableName: ROUND
-            constraintName: FK_ROUND_CORRECT_MOVIE
-            referencedColumnnames: IMDB_ID
+            constraintName: FK_ROUND_FIRST_MOVIE_OPTION_ID
+            referencedColumnnames: ID
+            referencedTableName: MOVIE
+        - addForeignKeyConstraint:
+            baseColumnNames: SECOND_MOVIE_OPTION_ID
+            baseTableName: ROUND
+            constraintName: FK_ROUND_SECND_MOVIE_OPTION_ID
+            referencedColumnnames: ID
             referencedTableName: MOVIE
         - addForeignKeyConstraint:
             baseColumnNames: GAME_ID
@@ -44,9 +60,17 @@ databaseChangeLog:
             constraintName: FK_ROUND_GAME_ID
             referencedColumnnames: ID
             referencedTableName: GAME
+        - addUniqueConstraint:
+            columnNames: GAME_ID, FIRST_MOVIE_OPTION_ID, SECOND_MOVIE_OPTION_ID
+            constraintName: UK_ROUND_GAME_FIRST_SECOND
+            tableName: ROUND
+        - addUniqueConstraint:
+            columnNames: GAME_ID, SECOND_MOVIE_OPTION_ID, FIRST_MOVIE_OPTION_ID
+            constraintName: UK_ROUND_GAME_SECOND_FIRST
+            tableName: ROUND
 
   - changeSet:
-      id: add-current-game-id-column-at-player
+      id: add-current-round-id-column-at-game
       author: vmc
       changes:
         - addColumn:

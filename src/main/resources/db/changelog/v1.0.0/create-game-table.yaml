@@ -25,15 +25,17 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: UPDATED_AT
-                  type: DATETIME
-              - column:
                   name: FINISHED_AT
                   type: DATETIME
               - column:
                   name: FINISHED
                   type: BOOLEAN
                   defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: FAILURES_COUNT
+                  type: INT
                   constraints:
                     nullable: false
 

@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class LetsCodeImdbChallengeApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(LetsCodeImdbChallengeApplication.class, args);
+		SpringApplication
+			.run(LetsCodeImdbChallengeApplication.class, args)
+			.start();
 	}
 
 }

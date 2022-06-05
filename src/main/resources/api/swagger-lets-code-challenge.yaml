@@ -1,0 +1,78 @@
+openapi: 3.0.0
+info:
+  title: Lets Code IMDB Card Game Challenge
+  description: |-
+    Lets Code IMDB Card Game Challenge is a game that will give two movie options
+    to choose which one has the higher score, that is the movie IMDB rating multiplied by the votes count.
+  version: 1.0.0
+paths:
+  /game/start:
+    post:
+      description: Starts a new Game
+      tags:
+        - Game
+      responses:
+        '200':
+          description: Successfully return the first round of the game with the movies to choose
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameStartResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameStartResponse'
+
+components:
+  schemas:
+    Movie:
+      type: object
+      description: Describes a movie on IMDB catalog
+      properties:
+        title:
+          type: string
+          example: Some Nice Movie
+          maxLength: 500
+        imdb_id:
+          type: string
+          example: tt0000001
+          maxLength: 50
+        genres:
+          type: string
+          example: Musical,Action
+          maxLength: 200
+        year:
+          type: integer
+          example: 2009
+      required:
+        - title
+        - imdb_id
+    GameStartResponse:
+      type: object
+      properties:
+        round_number:
+          type: integer
+          example: 5
+        failures_count:
+          type: integer
+          example: 2
+          description: The current session amount of failures, on the third failure the current game will be ended.
+        firstMovieOption:
+          $ref: '#/components/schemas/Movie'
+          description: First option of movies to guess which one has the higher score (rating multiplied by votes) on IMDB.
+        secondMovieOption:
+          $ref: '#/components/schemas/Movie'
+          description: Second option of movies to guess which one has the higher score (rating multiplied by vo
+      required:
+        - movies
+        - round_number
+        - failures
+    BadRequestResponse:
+      type: object
+      description: "Response for invalid use of API"
+      properties:
+        message:
+          type: string
+          example: "Player not found"

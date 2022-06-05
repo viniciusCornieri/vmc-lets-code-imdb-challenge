@@ -1,8 +1,6 @@
 package vinicius.cornieri.lets.code.challenge.domain.model;
 
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
@@ -10,6 +8,7 @@ import org.hibernate.Hibernate;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,25 +20,30 @@ import javax.persistence.ManyToOne;
 @Entity
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
 @ToString
 public class Round {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(referencedColumnName = "GAME_ID", nullable = false)
+    @Column(name = "ROUND_NUMBER", nullable = false)
+    private int roundNumber;
+
+    @ManyToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "GAME_ID", nullable = false)
     private Game game;
 
     @Column(name = "CREATED_AT", nullable = false)
-    private ZonedDateTime createdAt;
+    private ZonedDateTime createdAt = ZonedDateTime.now();
 
     @ManyToOne
-    @JoinColumn(referencedColumnName = "CORRECT_MOVIE_ID", nullable = false)
-    private Movie correctMovie;
+    @JoinColumn(name = "FIRST_MOVIE_OPTION_ID", nullable = false)
+    private Movie firstMovieOption;
+
+    @ManyToOne
+    @JoinColumn(name = "SECOND_MOVIE_OPTION_ID", nullable = false)
+    private Movie secondMovieOption;
 
     @Column(name = "WAS_ANSWERED_CORRECTLY")
     private Boolean wasAnsweredCorrectly;

@@ -7,16 +7,35 @@ databaseChangeLog:
             tableName: MOVIE
             columns:
               - column:
+                  name: ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primarykey: true
+                    nullable: false
+              - column:
                   name: IMDB_ID
                   type: VARCHAR(50)
                   constraints:
-                    primaryKey: true
+                    unique: true
                     nullable: false
               - column:
                   name: TITLE
-                  type: VARCHAR(200)
+                  type: VARCHAR(500)
                   constraints:
                     nullable: false
               - column:
+                  name: GENRES
+                  type: VARCHAR(200)
+              - column:
+                  name: RELEASE_YEAR
+                  type: INT
+              - column:
                   name: RATING
                   type: INT
+        - createIndex:
+            tableName: MOVIE
+            indexName: IX_MOVIE_IMDB_ID
+            columns:
+              - column:
+                  name: IMDB_ID

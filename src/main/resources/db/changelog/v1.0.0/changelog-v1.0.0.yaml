@@ -12,5 +12,5 @@ databaseChangeLog:
       file: "create-round-table.yaml"
       relativeToChangelogFile: true
   - include:
-      file: "create-movie-round-table.yaml"
+      file: "insert-initial-players.yaml"
       relativeToChangelogFile: true

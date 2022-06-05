@@ -1,8 +1,6 @@
 package vinicius.cornieri.lets.code.challenge.domain.model;
 
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
@@ -10,6 +8,7 @@ import org.hibernate.Hibernate;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,26 +19,21 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 @Entity
-@Builder
 @Setter
 @Getter
 @ToString
-@NoArgsConstructor
 public class Game {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(referencedColumnName = "PLAYER_ID", nullable = false)
+    @JoinColumn(name = "PLAYER_ID", nullable = false)
     private Player player;
 
     @Column(name = "CREATED_AT", nullable = false)
-    private ZonedDateTime createdAt;
-
-    @Column(name = "UPDATED_AT")
-    private ZonedDateTime updatedAt;
+    private ZonedDateTime createdAt = ZonedDateTime.now();
 
     @Column(name = "FINISHED_AT")
     private ZonedDateTime finishedAt;
@@ -47,8 +41,11 @@ public class Game {
     @Column(name = "FINISHED")
     private boolean finished;
 
-    @OneToOne
-    @JoinColumn(referencedColumnName = "CURRENT_ROUND_ID")
+    @Column(name = "FAILURES_COUNT")
+    private int failuresCount;
+
+    @OneToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "CURRENT_ROUND_ID")
     @ToString.Exclude
     private Round currentRound;
 
