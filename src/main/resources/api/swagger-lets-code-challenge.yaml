@@ -23,13 +23,36 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GameStartResponse'
+                $ref: '#/components/schemas/BadRequestResponse'
+  /game/choose:
+    post:
+      description: Make a choice beetwen the two movies which one has the higher score
+      tags:
+        - Game
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameChooseRequest'
+      responses:
+        '200':
+          description:  Return if the the choice was right or not.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameChooseResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
 
 components:
   schemas:
     Movie:
       type: object
-      description: Describes a movie on IMDB catalog
+      description:  One option of movies to guess which one has the higher score (rating multiplied by votes) on IMDB.
       properties:
         title:
           type: string
@@ -49,30 +72,126 @@ components:
       required:
         - title
         - imdb_id
+    Round:
+      type: object
+      description: a game round with two movie option to choose which one has the higher score
+      properties:
+        round_number:
+          type: integer
+          description: the number of the current active round
+          example: 0
+        firstMovieOption:
+          $ref: '#/components/schemas/Movie'
+        secondMovieOption:
+          $ref: '#/components/schemas/Movie'
+      required:
+        - round_number
+        - firstMovieOption
+        - secondMovieOption
     GameStartResponse:
+      type: object
+      properties:
+        round:
+          $ref: '#/components/schemas/Round'
+        failures_count:
+          type: integer
+          example: 0
+          description: The current session amount of failures, on the third failure the current game will be ended.
+      required:
+        - round
+        - failures_count
+    Choice:
+      type: string
+      description: Enum that represents the choice of the player of the movie with the higher score.
+      enum:
+        - FIRST
+        - SECOND
+    GameChooseRequest:
+      type: object
+      properties:
+        choice:
+          $ref: '#/components/schemas/Choice'
+        round_number:
+          type: integer
+          description: The current round number that the player is submitting the answer
+      required:
+        - choice
+        - round_number
+    Rating:
+      type: object
+      properties:
+        score:
+          type: number
+          description: The score is composed by the IMDB rating multiplied by the number of votes.
+          example: 8738.1
+        rating:
+          type: number
+          maximum: 10.0
+          description: The IMDB rating for the movie from 0 to 10.
+          example: 6.3
+        votes:
+          type: integer
+          description: The number of votes that the movie have.
+          example: 1387
+    MovieWithRating:
+      description: repeat the movie option of the round but including the rating and score for this movie
+      allOf:
+        - $ref: '#/components/schemas/Movie'
+        - $ref: '#/components/schemas/Rating'
+    RoundResult:
       type: object
       properties:
         round_number:
           type: integer
-          example: 5
+          description: the current round number of this choice
+          example: 1
+        firstMovieOption:
+          $ref: '#/components/schemas/MovieWithRating'
+        secondMovieOption:
+          $ref: '#/components/schemas/MovieWithRating'
+        correctAnswer:
+          allOf:
+            - $ref: '#/components/schemas/Choice'
+          description: The correct answer for this round
+      required:
+        - round_number
+        - firstMovieOption
+        - secondMovieOption
+        - correctAnswer
+    GameChooseResponse:
+      type: object
+      properties:
+        wasRight:
+          type: boolean
+          description: indicates if the player choose the movie correctly
+          example: false
         failures_count:
           type: integer
+          description: the current failures count after this choice
           example: 2
-          description: The current session amount of failures, on the third failure the current game will be ended.
-        firstMovieOption:
-          $ref: '#/components/schemas/Movie'
-          description: First option of movies to guess which one has the higher score (rating multiplied by votes) on IMDB.
-        secondMovieOption:
-          $ref: '#/components/schemas/Movie'
-          description: Second option of movies to guess which one has the higher score (rating multiplied by vo
+        round_result:
+          $ref: '#/components/schemas/RoundResult'
       required:
-        - movies
-        - round_number
-        - failures
+        - wasRight
+        - failures_count
+        - round_result
     BadRequestResponse:
       type: object
       description: "Response for invalid use of API"
       properties:
+        timestamp:
+          type: string
+          description: Error timestamp
+          example:  "2022-06-06T01:40:37.937+00:00"
+        status:
+          type: integer
+          description: Http status code
+          example: 400
         message:
           type: string
+          description: "error description"
           example: "Player not found"
+        path:
+          type: string
+          description: endpoint that returned error
+          example: "/game/start/"

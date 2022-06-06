@@ -11,6 +11,6 @@ public interface GameStartResponseDtoMapper {
 
     GameStartResponseDtoMapper INSTANCE = Mappers.getMapper( GameStartResponseDtoMapper.class );
 
-    @Mapping(target = ".", source = "currentRound")
+    @Mapping(target = "round", source = "currentRound")
     GameStartResponseDto fromGame(Game game);
 }

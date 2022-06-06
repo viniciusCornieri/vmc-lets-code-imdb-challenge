@@ -7,6 +7,7 @@ import vinicius.cornieri.lets.code.challenge.domain.model.Movie;
 import vinicius.cornieri.lets.code.challenge.domain.model.Round;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.GameStartResponseDto;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.MovieDto;
+import vinicius.cornieri.lets.code.challenge.generated.domain.view.RoundDto;
 
 class GameStartResponseDtoMapperTest {
 
@@ -26,8 +27,9 @@ class GameStartResponseDtoMapperTest {
         Game game = getInputGame();
 
         GameStartResponseDto response = GameStartResponseDtoMapper.INSTANCE.fromGame(game);
-        MovieDto firstMovieOption = response.getFirstMovieOption();
-        MovieDto secondMovieOption = response.getSecondMovieOption();
+        RoundDto round = response.getRound();
+        MovieDto firstMovieOption = round.getFirstMovieOption();
+        MovieDto secondMovieOption = round.getSecondMovieOption();
 
         SoftAssertions soft = new SoftAssertions();
         soft.assertThat(firstMovieOption).isNotNull();
@@ -35,7 +37,7 @@ class GameStartResponseDtoMapperTest {
         soft.assertAll();
 
         soft.assertThat(response.getFailuresCount()).isEqualTo(FAILURES_COUNT);
-        soft.assertThat(response.getRoundNumber()).isEqualTo(ROUND_NUMBER);
+        soft.assertThat(round.getRoundNumber()).isEqualTo(ROUND_NUMBER);
         soft.assertThat(firstMovieOption.getImdbId()).isEqualTo(FIRST_MOVIE_IMDB_ID);
         soft.assertThat(firstMovieOption.getGenres()).isEqualTo(FIRST_MOVIE_GENRE);
         soft.assertThat(firstMovieOption.getTitle()).isEqualTo(FIRST_MOVIE_TITLE);
