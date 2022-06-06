@@ -23,19 +23,6 @@ public class CSVFactory {
         throw new IllegalStateException("Static utility class should not be instantiated");
     }
 
-    private static CSVParser buildTSVParser() {
-        return new CSVParserBuilder()
-            .withSeparator('\t')
-            .withIgnoreQuotations(true)
-            .build();
-    }
-
-    public static CSVReader buildTSVReader(String csvPath) {
-        CSVParser tsvParser = buildTSVParser();
-
-        return buildCSVReader(csvPath, tsvParser);
-    }
-
     @SneakyThrows
     public static <T> CsvToBean<T> buildCSVToBean(String csvPath, Class<T> clazz) {
         return new CsvToBeanBuilder<T>(buildReader(csvPath))
@@ -44,17 +31,7 @@ public class CSVFactory {
             .build();
     }
 
-    @SneakyThrows
-    private static CSVReader buildCSVReader(String csvPath, CSVParser parser) {
-        Reader reader = buildReader(csvPath);
-
-        return new CSVReaderBuilder(reader)
-            .withSkipLines(1)
-            .withCSVParser(parser)
-            .build();
-    }
-
-    private static Reader buildReader(String path) throws IOException, URISyntaxException {
+    public static Reader buildReader(String path) throws IOException, URISyntaxException {
         return Files.newBufferedReader(buildPath(path));
     }
 

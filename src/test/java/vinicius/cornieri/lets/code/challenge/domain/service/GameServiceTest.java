@@ -31,8 +31,7 @@ class GameServiceTest {
             .when()
                 .post(GAME_START_ENDPOINT)
             .then()
-            .log()
-            .all()
+                .log().all()
                 .statusCode(200)
             .and()
                 .body("round_number", equalTo(0))
@@ -41,6 +40,27 @@ class GameServiceTest {
                 .body("firstMovieOption.title", not(blankOrNullString()))
                 .body("secondMovieOption.imdb_id", not(blankOrNullString()))
                 .body("secondMovieOption.title", not(blankOrNullString()));
+        //@formatter:on
+
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenStartingANewGameAfterOneAlreadyStarted() {
+        //@formatter:off
+        RestAssured
+            .given()
+                .post(GAME_START_ENDPOINT)
+            .then()
+                .statusCode(200);
+
+        RestAssured
+            .given()
+                .post(GAME_START_ENDPOINT)
+            .then()
+                .log().all()
+                .statusCode(400)
+            .and()
+                .body("message", equalTo("Player have already an active game started, continue playing at /game/current and /game/choose endpoints"));
         //@formatter:on
 
     }

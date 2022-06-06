@@ -1,7 +1,9 @@
 package vinicius.cornieri.lets.code.challenge;
 
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
+import com.opencsv.CSVReaderBuilder;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import lombok.SneakyThrows;
@@ -11,6 +13,7 @@ import vinicius.cornieri.lets.code.challenge.domain.model.Movie;
 import vinicius.cornieri.lets.code.challenge.domain.service.csv.CSVFactory;
 
 import java.io.FileWriter;
+import java.io.Reader;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -22,6 +25,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static vinicius.cornieri.lets.code.challenge.domain.service.csv.CSVFactory.buildReader;
 
 @Slf4j
 public class FilterTSVRatings {
@@ -64,7 +69,7 @@ public class FilterTSVRatings {
         String ratingsTsvPath = "imdb.data/title.ratings.tsv";
         log.info("Processing {} filling rating of movies HashMap", ratingsTsvPath);
 
-        CSVReader csvReader = CSVFactory.buildTSVReader(ratingsTsvPath);
+        CSVReader csvReader = buildTSVReader(ratingsTsvPath);
         String[] line = csvReader.readNext();
         while (line != null) {
             String imdbId = line[0];
@@ -88,7 +93,7 @@ public class FilterTSVRatings {
         String moviesBasicsTsvPath = "imdb.data/title.basics.only.movies.tsv";
         log.info("Parsing {} into movies HashMap", moviesBasicsTsvPath);
 
-        CSVReader csvReader = CSVFactory.buildTSVReader(moviesBasicsTsvPath);
+        CSVReader csvReader = buildTSVReader(moviesBasicsTsvPath);
 
         HashMap<String, Movie> movies = new HashMap<>();
         String[] line = csvReader.readNext();
@@ -109,6 +114,27 @@ public class FilterTSVRatings {
         return movies;
     }
 
+    @SneakyThrows
+    private static CSVReader buildCSVReader(String csvPath, CSVParser parser) {
+        Reader reader = buildReader(csvPath);
 
+        return new CSVReaderBuilder(reader)
+            .withSkipLines(1)
+            .withCSVParser(parser)
+            .build();
+    }
+
+    public static CSVReader buildTSVReader(String csvPath) {
+        CSVParser tsvParser = buildTSVParser();
+
+        return buildCSVReader(csvPath, tsvParser);
+    }
+
+    private static CSVParser buildTSVParser() {
+        return new CSVParserBuilder()
+            .withSeparator('\t')
+            .withIgnoreQuotations(true)
+            .build();
+    }
 
 }
