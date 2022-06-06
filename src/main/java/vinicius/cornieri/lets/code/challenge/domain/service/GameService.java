@@ -4,12 +4,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import vinicius.cornieri.lets.code.challenge.domain.model.Game;
 import vinicius.cornieri.lets.code.challenge.domain.model.Player;
 import vinicius.cornieri.lets.code.challenge.domain.service.mapper.GameStartResponseDtoMapper;
+import vinicius.cornieri.lets.code.challenge.exception.ActiveGameNotFoundException;
 import vinicius.cornieri.lets.code.challenge.exception.AlreadyHaveActiveGameException;
+import vinicius.cornieri.lets.code.challenge.generated.domain.view.GameChooseRequestDto;
+import vinicius.cornieri.lets.code.challenge.generated.domain.view.GameChooseResponseDto;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.GameStartResponseDto;
 import vinicius.cornieri.lets.code.challenge.persistence.GameRepository;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +42,16 @@ public class GameService {
 
         playerService.updatePlayerCurrentGame(activePlayer, newGame);
         return GameStartResponseDtoMapper.INSTANCE.fromGame(newGame);
+    }
+
+    public GameChooseResponseDto processChoice(GameChooseRequestDto choice) {
+        Player activePlayer = playerService.findActivePlayer();
+        if (!playerHasActiveGame(activePlayer)) {
+            log.info("Player {} has not an active game to choose", activePlayer);
+            throw new ActiveGameNotFoundException();
+        }
+
+        return null;
     }
 
     private boolean playerHasActiveGame(Player activePlayer) {

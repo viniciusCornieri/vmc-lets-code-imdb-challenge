@@ -12,8 +12,8 @@ paths:
       tags:
         - Game
       responses:
-        '200':
-          description: Successfully return the first round of the game with the movies to choose
+        '203':
+          description: Created new game and return the first round of the game with the movies to choose
           content:
             application/json:
               schema:
@@ -30,6 +30,7 @@ paths:
       tags:
         - Game
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -191,6 +192,17 @@ components:
           type: string
           description: "error description"
           example: "Player not found"
+        fields:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              field_error:
+                type: string
+              rejected_value:
+                type: string
         path:
           type: string
           description: endpoint that returned error
