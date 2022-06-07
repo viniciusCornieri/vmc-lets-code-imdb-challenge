@@ -8,7 +8,7 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     open-in-view: false
   liquibase:
-    drop-first: true
+    drop-first: false
 
 server:
   error:

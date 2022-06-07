@@ -3,7 +3,6 @@ package vinicius.cornieri.lets.code.challenge.domain.model;
 import com.opencsv.bean.CsvBindByPosition;
 import com.opencsv.bean.CsvIgnore;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
@@ -21,7 +20,6 @@ import javax.persistence.Id;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
 public class Movie {
 
     @Id
@@ -69,10 +67,5 @@ public class Movie {
         Movie movie = (Movie) o;
 
         return Objects.equals(imdbId, movie.imdbId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(imdbId);
     }
 }

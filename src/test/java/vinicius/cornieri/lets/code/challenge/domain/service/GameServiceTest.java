@@ -36,12 +36,12 @@ import static vinicius.cornieri.lets.code.challenge.config.RestResponseException
 @Sql(scripts = "/sql/tear-down.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class GameServiceTest {
 
-    private static final String GAME_START_ENDPOINT = "/game/start";
+    private static final String GAME_START_ENDPOINT = "/game";
     private static final String GAME_CHOOSE_ENDPOINT = "/game/choose";
     private static final long HIGHER_SCORE_MOVIE_ID = 12L;
     private static final long LOWER_SCORE_MOVIE_ID = 15L;
     private static final String GAME_STOP_ENDPOINT = "/game/stop";
-    private static final String GAME_CURRENT_ENDPOINT = "/game/current";
+    private static final String GAME_CURRENT_ENDPOINT = "/game";
     private static final String PLAYER_ONE_API_KEY = "player-one-key";
     private static final String API_KEY = "API-KEY";
 

@@ -1,5 +1,6 @@
 package vinicius.cornieri.lets.code.challenge.domain.service.mapper;
 
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import vinicius.cornieri.lets.code.challenge.domain.model.Game;
@@ -42,8 +43,8 @@ class GameChooseResponseDtoMapperTest {
     public static final BigDecimal SECOND_MOVIE_RESULT_SCORE = SECOND_MOVIE_RESULT_RATING.multiply(SECOND_MOVIE_RESULT_NUM_VOTES);
     public static final int SECOND_MOVIE_RESULT_YEAR = 2001;
     public static final ChoiceDto CORRECT_ANSWER = ChoiceDto.FIRST;
-    public static final boolean GAME_IS_FINISHED = true;
-    public static final boolean WAS_ANSWERED_CORRECTLY = false;
+    public static final boolean GAME_IS_FINISHED = false;
+    public static final boolean WAS_ANSWERED_CORRECTLY = true;
 
     @Test
     void shouldMapGameToGameStartResponse() {
@@ -66,7 +67,7 @@ class GameChooseResponseDtoMapperTest {
         soft.assertAll();
 
         soft.assertThat(response.getFailuresCount()).isEqualTo(FAILURES_COUNT);
-        soft.assertThat(response.getFinished()).isTrue();
+        soft.assertThat(response.getFinished()).isEqualTo(GAME_IS_FINISHED);
         soft.assertThat(response.getWasRight()).isEqualTo(WAS_ANSWERED_CORRECTLY);
         soft.assertThat(nextRound.getRoundNumber()).isEqualTo(NEXT_ROUND_NUMBER);
 
@@ -99,6 +100,16 @@ class GameChooseResponseDtoMapperTest {
         soft.assertThat(resultSecondMovie.getNumVotes()).isEqualTo(SECOND_MOVIE_RESULT_NUM_VOTES.intValue());
         soft.assertThat(resultSecondMovie.getScore()).isEqualTo(SECOND_MOVIE_RESULT_SCORE);
         soft.assertAll();
+    }
+
+    @Test
+    void shouldRemoveMappingOfNextGameWhenGameHasFinished() {
+        Game game = getInputGame();
+        game.setFinished(true);
+        GameChooseResponseDto response =
+            GameChooseResponseDtoMapper.INSTANCE.fromGameAndLastRound(game, getLastRound(), CORRECT_ANSWER);
+
+        Assertions.assertThat(response.getNextRound()).isNull();
     }
 
     private Game getInputGame() {

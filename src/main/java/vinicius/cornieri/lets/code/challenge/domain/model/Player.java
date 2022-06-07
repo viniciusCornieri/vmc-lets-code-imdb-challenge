@@ -3,9 +3,6 @@ package vinicius.cornieri.lets.code.challenge.domain.model;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.Hibernate;
-
-import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -44,24 +41,6 @@ public class Player {
 
     public void incrementScore(int byNewScore) {
         this.score += byNewScore;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-            return false;
-        }
-        Player player = (Player) o;
-
-        return Objects.equals(apiKey, player.apiKey);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(apiKey);
     }
 
 }

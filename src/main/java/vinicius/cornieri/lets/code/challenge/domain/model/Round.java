@@ -2,11 +2,8 @@ package vinicius.cornieri.lets.code.challenge.domain.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.Hibernate;
 
 import java.time.ZonedDateTime;
-import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,7 +17,6 @@ import javax.persistence.ManyToOne;
 @Entity
 @Getter
 @Setter
-@ToString
 public class Round {
 
     @Id
@@ -47,23 +43,5 @@ public class Round {
 
     @Column(name = "wasAnsweredCorrectly")
     private Boolean wasAnsweredCorrectly;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-            return false;
-        }
-        Round round = (Round) o;
-
-        return Objects.equals(id, round.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 
 }

@@ -5,6 +5,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import vinicius.cornieri.lets.code.challenge.domain.model.Movie;
 import vinicius.cornieri.lets.code.challenge.persistence.MovieRepository;
 
@@ -12,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 @SpringBootTest
+@Sql(scripts = "/sql/tear-down.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class MovieServiceTest {
 
     public static final int EXPECTED_TOTAL_CATALOG = 279085;
@@ -35,7 +37,7 @@ class MovieServiceTest {
         softly.assertThat(movie.getImdbId()).isEqualTo("tt0051379");
         softly.assertThat(movie.getTitle()).isEqualTo("Asphalt");
         softly.assertThat(movie.getGenres()).isEqualTo("Drama");
-        softly.assertThat(movie.getRating()).isEqualTo(68);
+        softly.assertThat(movie.getRating()).isEqualByComparingTo("6.8");
         softly.assertThat(movie.getYear()).isEqualTo(1959);
 
         softly.assertAll();

@@ -52,23 +52,5 @@ public class Game {
     public void incrementFailures() {
         this.failuresCount++;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-            return false;
-        }
-        Game game = (Game) o;
-
-        return Objects.equals(id, game.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
-
+    
 }
