@@ -11,4 +11,6 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
 
     Optional<Player> findByApiKey(String apiKey);
 
+    boolean existsByNickname(String nickname);
+
 }

@@ -6,7 +6,7 @@ info:
     to choose which one has the higher score, that is the movie IMDB rating multiplied by the votes count.
   version: 1.0.0
 paths:
-  /game/start:
+  /game:
     post:
       description: Starts a new active Game. Should only be used when the player has not an active game session.
       tags:
@@ -16,6 +16,27 @@ paths:
       responses:
         '203':
           description: Created new game and return the first round of the game with the movies to choose
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentGameResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        '401':
+          description: Non authorized use of api, verify your API_KEY header.
+    get:
+      description: Get the current active game.
+      tags:
+        - Game
+      parameters:
+        - $ref: '#/components/parameters/apiKeyHeader'
+      responses:
+        '200':
+          description: the current active game
           content:
             application/json:
               schema:
@@ -38,28 +59,6 @@ paths:
       responses:
         '204':
           description: Game finished with success
-        '400':
-          description: Invalid request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BadRequestResponse'
-        '401':
-          description: Non authorized use of api, verify your API_KEY header.
-  /game/current:
-    get:
-      description: Get the current active game.
-      tags:
-        - Game
-      parameters:
-        - $ref: '#/components/parameters/apiKeyHeader'
-      responses:
-        '200':
-          description: the current active game
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CurrentGameResponse'
         '400':
           description: Invalid request
           content:
@@ -108,6 +107,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PlayerLeaderboard'
+  /player:
+    post:
+      description: creates a new player and get an API-KEY
+      tags:
+        - Player
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Player'
+      responses:
+        '203':
+          description: The player with the API-KEY.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerWithApikey'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
 
 components:
   parameters:
@@ -252,22 +275,47 @@ components:
         - wasRight
         - failures_count
         - round_result
+    Nickname:
+      type: string
+      description: unique player nickname
+      maxLength: 100
+      minLength: 3
+      example: Green Mario
     Player:
       type: object
       properties:
         nickname:
+          $ref: '#/components/schemas/Nickname'
+      required:
+        - nickname
+    PlayerWithApikey:
+      type: object
+      properties:
+        nickname:
+          $ref: '#/components/schemas/Nickname'
+        api-key:
           type: string
-          description: the player nickname
-          maxLength: 100
-          example: Green Mario
+          maxLength: 50
+          example: "dab41a9e-8d8d-4299-8f62-3e3566b28f04"
+      required:
+        - nickname
+        - api-key
+    PlayerWithScore:
+      type: object
+      properties:
+        nickname:
+          $ref: '#/components/schemas/Nickname'
         score:
           type: integer
           description: the player scores
           example: 999
+      required:
+        - nickname
+        - score
     PlayerLeaderboard:
       type: array
       items:
-        $ref: "#/components/schemas/Player"
+        $ref: "#/components/schemas/PlayerWithScore"
     BadRequestResponse:
       type: object
       description: "Response for invalid use of API"

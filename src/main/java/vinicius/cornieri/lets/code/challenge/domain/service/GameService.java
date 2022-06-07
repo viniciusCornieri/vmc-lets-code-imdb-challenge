@@ -82,6 +82,8 @@ public class GameService {
 
     public void stopGame(String apiKey) {
         Game currentGame = getPlayerCurrentGame(apiKey);
+        currentGame.incrementFailures();
+        currentGame.getCurrentRound().setWasAnsweredCorrectly(false);
         finishGame(currentGame);
         gameRepository.saveAndFlush(currentGame);
     }
@@ -90,6 +92,7 @@ public class GameService {
         log.info("Finishing game {}", currentGame);
         currentGame.setFinished(true);
         currentGame.setFinishedAt(ZonedDateTime.now());
+        playerService.score(currentGame);
     }
 
     private Game getPlayerCurrentGame(String apiKey) {

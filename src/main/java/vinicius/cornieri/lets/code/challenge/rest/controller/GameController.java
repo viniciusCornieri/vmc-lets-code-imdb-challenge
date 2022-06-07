@@ -17,7 +17,7 @@ public class GameController implements GameApi {
     private final GameService gameService;
 
     @Override
-    public ResponseEntity<CurrentGameResponseDto> gameStartPost(String apiKey) {
+    public ResponseEntity<CurrentGameResponseDto> gamePost(String apiKey) {
         return new ResponseEntity<>(gameService.startGame(apiKey), HttpStatus.CREATED);
     }
 
@@ -33,7 +33,7 @@ public class GameController implements GameApi {
     }
 
     @Override
-    public ResponseEntity<CurrentGameResponseDto> gameCurrentGet(String apiKey) {
+    public ResponseEntity<CurrentGameResponseDto> gameGet(String apiKey) {
         return ResponseEntity.ok(gameService.getCurrentActiveGame(apiKey));
     }
 

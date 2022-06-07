@@ -42,6 +42,10 @@ public class Player {
     @Column(name = "SCORE", nullable = false)
     private int score = 0;
 
+    public void incrementScore(int byNewScore) {
+        this.score += byNewScore;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
