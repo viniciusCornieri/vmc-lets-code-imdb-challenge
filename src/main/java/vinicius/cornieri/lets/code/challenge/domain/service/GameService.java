@@ -25,18 +25,18 @@ import java.time.ZonedDateTime;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class GameService {
 
-    private final PlayerService playerService;
     private final RoundService roundService;
     private final GameRepository gameRepository;
+    private final PlayerService playerService;
 
     @Value("${game.maximum-failure-allowed:3}")
     private int maximumFailureAllowed;
 
-    @Transactional
-    public CurrentGameResponseDto startGame() {
-        Player activePlayer = playerService.findActivePlayer();
+    public CurrentGameResponseDto startGame(String apiKey) {
+        Player activePlayer = getCurrentPlayer(apiKey);
         if (playerHasActiveGame(activePlayer)) {
             log.info("Player {} has already an active game", activePlayer);
             throw new AlreadyHaveActiveGameException();
@@ -51,15 +51,13 @@ public class GameService {
         return CurrentGameResponseDtoMapper.INSTANCE.fromGame(newGame);
     }
 
-    @Transactional
-    public CurrentGameResponseDto getCurrentActiveGame() {
-        Game currentGame = getPlayerCurrentGame();
+    public CurrentGameResponseDto getCurrentActiveGame(String apikey) {
+        Game currentGame = getPlayerCurrentGame(apikey);
         return CurrentGameResponseDtoMapper.INSTANCE.fromGame(currentGame);
     }
 
-    @Transactional
-    public GameChooseResponseDto processChoice(GameChooseRequestDto choice) {
-        Game currentGame = getPlayerCurrentGame();
+    public GameChooseResponseDto processChoice(String apiKey, GameChooseRequestDto choice) {
+        Game currentGame = getPlayerCurrentGame(apiKey);
 
         Round lastRound = currentGame.getCurrentRound();
         if (choice.getRoundNumber() != lastRound.getRoundNumber()) {
@@ -82,21 +80,21 @@ public class GameService {
         return GameChooseResponseDtoMapper.INSTANCE.fromGameAndLastRound(currentGame, lastRound, correctAnswer);
     }
 
-    @Transactional
-    public void stopGame() {
-        Game currentGame = getPlayerCurrentGame();
+    public void stopGame(String apiKey) {
+        Game currentGame = getPlayerCurrentGame(apiKey);
         finishGame(currentGame);
         gameRepository.saveAndFlush(currentGame);
     }
 
     private void finishGame(Game currentGame) {
+        log.info("Finishing game {}", currentGame);
         currentGame.setFinished(true);
         currentGame.setFinishedAt(ZonedDateTime.now());
         currentGame.setCurrentRound(null);
     }
 
-    private Game getPlayerCurrentGame() {
-        Player activePlayer = playerService.findActivePlayer();
+    private Game getPlayerCurrentGame(String apiKey) {
+        Player activePlayer = getCurrentPlayer(apiKey);
         if (!playerHasActiveGame(activePlayer)) {
             log.info("Player {} has not an active game to choose", activePlayer);
             throw new ActiveGameNotFoundException();
@@ -118,6 +116,10 @@ public class GameService {
 
     private boolean playerHasActiveGame(Player activePlayer) {
         return activePlayer.getCurrentGame() != null && !activePlayer.getCurrentGame().isFinished();
+    }
+
+    private Player getCurrentPlayer(String apiKey){
+        return playerService.findCurrentPlayer(apiKey);
     }
 
 }

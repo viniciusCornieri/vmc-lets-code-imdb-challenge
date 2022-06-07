@@ -1,6 +1,7 @@
 package vinicius.cornieri.lets.code.challenge.domain.service;
 
 import io.restassured.RestAssured;
+import io.restassured.config.HeaderConfig;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,18 +31,20 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static vinicius.cornieri.lets.code.challenge.domain.service.RestResponseExceptionHandler.REQUIRED_REQUEST_BODY_IS_MISSING_MESSAGE;
+import static vinicius.cornieri.lets.code.challenge.config.RestResponseExceptionHandler.REQUIRED_REQUEST_BODY_IS_MISSING_MESSAGE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/sql/tear-down.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class GameServiceTest {
 
-    public static final String GAME_START_ENDPOINT = "/game/start";
-    public static final String GAME_CHOOSE_ENDPOINT = "/game/choose";
-    public static final long HIGHER_SCORE_MOVIE_ID = 12L;
-    public static final long LOWER_SCORE_MOVIE_ID = 15L;
-    public static final String GAME_STOP_ENDPOINT = "/game/stop";
-    public static final String GAME_CURRENT_ENDPOINT = "/game/current";
+    private static final String GAME_START_ENDPOINT = "/game/start";
+    private static final String GAME_CHOOSE_ENDPOINT = "/game/choose";
+    private static final long HIGHER_SCORE_MOVIE_ID = 12L;
+    private static final long LOWER_SCORE_MOVIE_ID = 15L;
+    private static final String GAME_STOP_ENDPOINT = "/game/stop";
+    private static final String GAME_CURRENT_ENDPOINT = "/game/current";
+    private static final String PLAYER_ONE_API_KEY = "player-one-key";
+    private static final String API_KEY = "API-KEY";
 
     @LocalServerPort
     private int port;
@@ -65,6 +68,7 @@ class GameServiceTest {
         //@formatter:off
         RestAssured
             .given()
+                .header(API_KEY, PLAYER_ONE_API_KEY)
             .when()
                 .post(GAME_START_ENDPOINT)
             .then()
@@ -85,6 +89,7 @@ class GameServiceTest {
     void shouldReturnTheCurrentActiveGameAfterCallingGameCurrent() {
         RestAssured
             .given()
+                .header(API_KEY, PLAYER_ONE_API_KEY)
                 .post(GAME_START_ENDPOINT)
                 .then()
             .statusCode(HttpStatus.CREATED.value())
@@ -94,6 +99,7 @@ class GameServiceTest {
         //@formatter:off
         RestAssured
             .given()
+                .header(API_KEY, PLAYER_ONE_API_KEY)
                 .get(GAME_CURRENT_ENDPOINT)
             .then()
                 .log().all()
@@ -114,12 +120,14 @@ class GameServiceTest {
         //@formatter:off
         RestAssured
             .given()
+                .header(API_KEY, PLAYER_ONE_API_KEY)
                 .post(GAME_START_ENDPOINT)
             .then()
                 .statusCode(HttpStatus.CREATED.value());
 
         RestAssured
             .given()
+                .header(API_KEY, PLAYER_ONE_API_KEY)
                 .post(GAME_START_ENDPOINT)
             .then()
                 .log().all()
@@ -140,6 +148,7 @@ class GameServiceTest {
         RestAssured
             .given()
                 .with()
+                .header(API_KEY, PLAYER_ONE_API_KEY)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(input)
                 .post(endpoint)
@@ -151,6 +160,7 @@ class GameServiceTest {
 
         RestAssured
             .given()
+                .header(API_KEY, PLAYER_ONE_API_KEY)
                 .get(GAME_CURRENT_ENDPOINT)
             .then()
                 .log().all()
@@ -166,6 +176,7 @@ class GameServiceTest {
     void shouldReturnBadRequestWhenCallingChooseOrStopAfterGameFinishes(String endpoint) {
         RestAssured
             .given()
+                .header(API_KEY, PLAYER_ONE_API_KEY)
                 .post(GAME_START_ENDPOINT)
             .then()
                 .statusCode(HttpStatus.CREATED.value())
@@ -183,6 +194,7 @@ class GameServiceTest {
         RestAssured
             .given()
             .with()
+                .header(API_KEY, PLAYER_ONE_API_KEY)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(input)
                 .post(endpoint)
@@ -194,6 +206,7 @@ class GameServiceTest {
 
         RestAssured
             .given()
+                .header(API_KEY, PLAYER_ONE_API_KEY)
                 .get(GAME_CURRENT_ENDPOINT)
             .then()
             .log().all()
@@ -210,6 +223,7 @@ class GameServiceTest {
         RestAssured
             .given()
             .with()
+                .header(API_KEY, PLAYER_ONE_API_KEY)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .post(GAME_CHOOSE_ENDPOINT)
             .then()
@@ -236,6 +250,7 @@ class GameServiceTest {
         RestAssured
             .given()
             .with()
+                .header(API_KEY, PLAYER_ONE_API_KEY)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(input)
                 .post(GAME_CHOOSE_ENDPOINT)
@@ -251,6 +266,7 @@ class GameServiceTest {
     void shouldReturnBadRequestWhenRoundNumberItsNotTheCurrentActiveRound() {
         RestAssured
             .given()
+                .header(API_KEY, PLAYER_ONE_API_KEY)
                 .post(GAME_START_ENDPOINT)
             .then()
                 .statusCode(HttpStatus.CREATED.value())
@@ -265,6 +281,7 @@ class GameServiceTest {
             .given()
             .with()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(API_KEY, PLAYER_ONE_API_KEY)
                 .body(input)
                 .post(GAME_CHOOSE_ENDPOINT)
             .then()
@@ -283,6 +300,7 @@ class GameServiceTest {
     void shouldReturnOkWhenChooseMovieCorrectly(long firstMovieId, long secondMovieId, String choice) {
         RestAssured
             .given()
+                .header(API_KEY, PLAYER_ONE_API_KEY)
                 .post(GAME_START_ENDPOINT)
             .then()
                 .statusCode(HttpStatus.CREATED.value());
@@ -297,6 +315,7 @@ class GameServiceTest {
         RestAssured
             .given()
             .with()
+                .header(API_KEY, PLAYER_ONE_API_KEY)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(input)
                 .post(GAME_CHOOSE_ENDPOINT)
@@ -321,9 +340,10 @@ class GameServiceTest {
     void shouldReturnOkWhenChooseWrongMovie(long firstMovieId, long secondMovieId, String choice, String correctAnswer) {
         RestAssured
             .given()
-            .post(GAME_START_ENDPOINT)
+                .header(API_KEY, PLAYER_ONE_API_KEY)
+                .post(GAME_START_ENDPOINT)
             .then()
-            .statusCode(HttpStatus.CREATED.value());
+                .statusCode(HttpStatus.CREATED.value());
 
         forceMoviesAtRound(firstMovieId, secondMovieId);
 
@@ -336,6 +356,7 @@ class GameServiceTest {
             .given()
             .with()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(API_KEY, PLAYER_ONE_API_KEY)
                 .body(input)
                 .post(GAME_CHOOSE_ENDPOINT)
             .then()
@@ -355,9 +376,10 @@ class GameServiceTest {
     void shouldFinishGameAfterTheThirdFailure() {
         RestAssured
             .given()
-            .post(GAME_START_ENDPOINT)
+                .header(API_KEY, PLAYER_ONE_API_KEY)
+                .post(GAME_START_ENDPOINT)
             .then()
-            .statusCode(HttpStatus.CREATED.value());
+                .statusCode(HttpStatus.CREATED.value());
 
         forceMoviesAtRound(HIGHER_SCORE_MOVIE_ID, LOWER_SCORE_MOVIE_ID);
 
@@ -372,14 +394,14 @@ class GameServiceTest {
         //@formatter:off
         RestAssured
             .given()
-            .with()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(API_KEY, PLAYER_ONE_API_KEY)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(input)
                 .post(GAME_CHOOSE_ENDPOINT)
             .then()
                 .log().all()
-                .statusCode(HttpStatus.OK.value())
             .and()
+                .statusCode(HttpStatus.OK.value())
                 .body("failures_count", equalTo(3))
                 .body("wasRight", equalTo(false))
                 .body("finished", equalTo(true))
@@ -397,6 +419,7 @@ class GameServiceTest {
     void shouldFinishGameAfterCallingGameStop() {
         RestAssured
             .given()
+            .header(API_KEY, PLAYER_ONE_API_KEY)
             .post(GAME_START_ENDPOINT)
             .then()
             .statusCode(HttpStatus.CREATED.value());
@@ -404,9 +427,9 @@ class GameServiceTest {
         //@formatter:off
         RestAssured
             .given()
-            .with()
+                .header(API_KEY, PLAYER_ONE_API_KEY)
                 .post(GAME_STOP_ENDPOINT)
-                .then()
+            .then()
                 .log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
         //@formatter:on
@@ -422,6 +445,44 @@ class GameServiceTest {
         round.setFirstMovieOption(firstMovie);
         round.setSecondMovieOption(secondMovie);
         roundRepository.saveAndFlush(round);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {GAME_START_ENDPOINT, GAME_STOP_ENDPOINT})
+    void shouldReturnUnauthorizedWhenCallingGameApisWithInvalidApiKey(String endpoint) {
+
+        //@formatter:off
+        RestAssured
+            .given()
+                .post(endpoint)
+            .then()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+
+        RestAssured
+            .given()
+                .header(API_KEY, "INVALID-API-KEY")
+                .post(endpoint)
+            .then()
+            .statusCode(HttpStatus.UNAUTHORIZED.value());
+        //@formatter:on
+    }
+
+    @Test
+    void shouldReturnUnauthorizedWhenCallingGameCurrentWithInvalidApiKey() {
+        //@formatter:off
+        RestAssured
+            .given()
+                .get(GAME_CURRENT_ENDPOINT)
+            .then()
+            .statusCode(HttpStatus.UNAUTHORIZED.value());
+
+        RestAssured
+            .given()
+            .header(API_KEY, "INVALID-API-KEY")
+                .get(GAME_CURRENT_ENDPOINT)
+            .then()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+        //@formatter:on
     }
 
 }

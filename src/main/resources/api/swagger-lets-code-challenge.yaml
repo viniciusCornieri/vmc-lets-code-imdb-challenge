@@ -11,6 +11,8 @@ paths:
       description: Starts a new active Game. Should only be used when the player has not an active game session.
       tags:
         - Game
+      parameters:
+        - $ref: '#/components/parameters/apiKeyHeader'
       responses:
         '203':
           description: Created new game and return the first round of the game with the movies to choose
@@ -24,11 +26,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
+        '401':
+          description: Non authorized use of api, verify your API_KEY header.
   /game/stop:
     post:
       description: Finishes the current Game. Should only used when the player has an active game session.
       tags:
         - Game
+      parameters:
+        - $ref: '#/components/parameters/apiKeyHeader'
       responses:
         '204':
           description: Game finished with success
@@ -38,11 +44,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
+        '401':
+          description: Non authorized use of api, verify your API_KEY header.
   /game/current:
     get:
       description: Get the current active game.
       tags:
         - Game
+      parameters:
+        - $ref: '#/components/parameters/apiKeyHeader'
       responses:
         '200':
           description: the current active game
@@ -56,11 +66,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
+        '401':
+          description: Non authorized use of api, verify your API_KEY header.
   /game/choose:
     post:
       description: Make a choice beetwen the two movies which one has the higher score
       tags:
         - Game
+      parameters:
+        - $ref: '#/components/parameters/apiKeyHeader'
       requestBody:
         required: true
         content:
@@ -80,8 +94,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
+        '401':
+          description: Non authorized use of api, verify your API_KEY header.
 
 components:
+  parameters:
+    apiKeyHeader:
+      name: API-KEY
+      description: An Player unique key used to authenticate on the game apis.
+      in: header
+      schema:
+        type: string
+        example: "dab41a9e-8d8d-4299-8f62-3e3566b28f04"
+      required: true
   schemas:
     Movie:
       type: object
@@ -215,6 +240,7 @@ components:
         - wasRight
         - failures_count
         - round_result
+
     BadRequestResponse:
       type: object
       description: "Response for invalid use of API"

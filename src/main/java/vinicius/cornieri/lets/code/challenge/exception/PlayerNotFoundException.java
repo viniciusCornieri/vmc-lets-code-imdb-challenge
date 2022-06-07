@@ -1,11 +1,14 @@
 package vinicius.cornieri.lets.code.challenge.exception;
 
-public class PlayerNotFoundException extends BadRequestException {
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
-    public static final String ERROR_MESSAGE = "Not found active player";
+public class PlayerNotFoundException extends ResponseStatusException {
 
-    public PlayerNotFoundException() {
-        super(ERROR_MESSAGE);
+    public static final String ERROR_MESSAGE_TEMPLATE = "Not found active player to the given apiKey %s";
+
+    public PlayerNotFoundException(String apiKey) {
+        super(HttpStatus.UNAUTHORIZED, String.format(ERROR_MESSAGE_TEMPLATE, apiKey));
     }
 
 }

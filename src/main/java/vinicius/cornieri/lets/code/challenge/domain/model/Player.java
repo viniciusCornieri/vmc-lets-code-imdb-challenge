@@ -33,11 +33,11 @@ public class Player {
     @ToString.Exclude
     private Game currentGame;
 
-    @Column(name = "NAME", nullable = false)
+    @Column(name = "NICKNAME", nullable = false)
     private String name;
 
-    @Column(name = "EMAIL", nullable = false)
-    private String email;
+    @Column(name = "API_KEY", nullable = false)
+    private String apiKey;
 
     @Override
     public boolean equals(Object o) {
@@ -49,12 +49,12 @@ public class Player {
         }
         Player player = (Player) o;
 
-        return Objects.equals(email, player.email);
+        return Objects.equals(apiKey, player.apiKey);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(email);
+        return Objects.hashCode(apiKey);
     }
 
 }

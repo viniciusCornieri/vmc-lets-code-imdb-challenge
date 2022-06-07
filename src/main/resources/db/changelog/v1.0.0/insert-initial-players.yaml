@@ -7,8 +7,17 @@ databaseChangeLog:
             tablename: PLAYER
             columns:
               - column:
-                  name: NAME
+                  name: NICKNAME
                   value: "Ready Player One"
               - column:
-                  name: EMAIL
-                  value: "ready.player@one.com"
+                  name: API_KEY
+                  value: "player-one-key"
+        - insert:
+            tablename: PLAYER
+            columns:
+              - column:
+                  name: NICKNAME
+                  value: "Green Mario"
+              - column:
+                  name: API_KEY
+                  value: "green-mario-key"

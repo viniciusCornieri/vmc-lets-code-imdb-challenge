@@ -1,13 +1,16 @@
-package vinicius.cornieri.lets.code.challenge.domain.service;
+package vinicius.cornieri.lets.code.challenge.config;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import vinicius.cornieri.lets.code.challenge.exception.BadRequestException;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.BadRequestResponseDto;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.BadRequestResponseFieldsDto;
 
@@ -67,6 +70,19 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
             return buildBadRequestEntity(headers, REQUIRED_REQUEST_BODY_IS_MISSING_MESSAGE,null);
         }
         return buildBadRequestEntity(headers, localizedMessage,null);
+    }
+
+    @ExceptionHandler({MissingRequestHeaderException.class})
+    protected ResponseEntity<Object> handleMissingRequestHeader(MissingRequestHeaderException ex,
+                                                                  WebRequest request) {
+
+        if ("API-KEY".equals(ex.getHeaderName())) {
+            return new ResponseEntity<>(
+                new BadRequestResponseDto().message("Need to inform a valid Player API-KEY header to access the game"),
+                HttpStatus.UNAUTHORIZED);
+        }
+
+        return buildBadRequestEntity(null, "Missing required header " + ex.getHeaderName(), null);
     }
 
 }

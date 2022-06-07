@@ -7,28 +7,22 @@ import vinicius.cornieri.lets.code.challenge.domain.model.Player;
 import vinicius.cornieri.lets.code.challenge.exception.PlayerNotFoundException;
 import vinicius.cornieri.lets.code.challenge.persistence.PlayerRepository;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class PlayerService {
 
     private final PlayerRepository playerRepository;
 
-    public Player createNewPlayer(String name, String email) {
-        Player player = new Player();
-        player.setEmail(email);
-        player.setName(name);
-
-        return playerRepository.saveAndFlush(player);
-    }
-
     public void updatePlayerCurrentGame(Player player, Game game) {
         player.setCurrentGame(game);
         playerRepository.saveAndFlush(player);
     }
 
-    public Player findActivePlayer() {
-        return playerRepository.findById(1L)
-            .orElseThrow(PlayerNotFoundException::new);
+    public Player findCurrentPlayer(String apiKey) {
+        return playerRepository.findByApiKey(apiKey)
+            .orElseThrow(() -> new PlayerNotFoundException(apiKey));
     }
 
 }

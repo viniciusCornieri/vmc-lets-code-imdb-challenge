@@ -30,7 +30,7 @@ public class Round {
     @Column(name = "ROUND_NUMBER", nullable = false)
     private int roundNumber;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = {CascadeType.MERGE})
     @JoinColumn(name = "GAME_ID", nullable = false)
     private Game game;
 

@@ -14,12 +14,14 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: NAME
+                  name: NICKNAME
                   type: VARCHAR(100)
                   constraints:
                     nullable: false
+                    unique: true
               - column:
-                  name: EMAIL
-                  type: VARCHAR(100)
+                  name: API_KEY
+                  type: VARCHAR(50)
                   constraints:
                     nullable: false
+                    unique: true
