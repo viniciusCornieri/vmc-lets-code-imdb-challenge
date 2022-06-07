@@ -96,6 +96,18 @@ paths:
                 $ref: '#/components/schemas/BadRequestResponse'
         '401':
           description: Non authorized use of api, verify your API_KEY header.
+  /player/leaderboard:
+    get:
+      description: Show the current players leaderboard order by the higher player score decrescent
+      tags:
+        - Player
+      responses:
+        '200':
+          description: The player leaderboard.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerLeaderboard'
 
 components:
   parameters:
@@ -240,7 +252,22 @@ components:
         - wasRight
         - failures_count
         - round_result
-
+    Player:
+      type: object
+      properties:
+        nickname:
+          type: string
+          description: the player nickname
+          maxLength: 100
+          example: Green Mario
+        score:
+          type: integer
+          description: the player scores
+          example: 999
+    PlayerLeaderboard:
+      type: array
+      items:
+        $ref: "#/components/schemas/Player"
     BadRequestResponse:
       type: object
       description: "Response for invalid use of API"

@@ -90,7 +90,6 @@ public class GameService {
         log.info("Finishing game {}", currentGame);
         currentGame.setFinished(true);
         currentGame.setFinishedAt(ZonedDateTime.now());
-        currentGame.setCurrentRound(null);
     }
 
     private Game getPlayerCurrentGame(String apiKey) {

@@ -34,10 +34,13 @@ public class Player {
     private Game currentGame;
 
     @Column(name = "NICKNAME", nullable = false)
-    private String name;
+    private String nickname;
 
     @Column(name = "API_KEY", nullable = false)
     private String apiKey;
+
+    @Column(name = "SCORE", nullable = false)
+    private int score = 0;
 
     @Override
     public boolean equals(Object o) {

@@ -1,7 +1,6 @@
 package vinicius.cornieri.lets.code.challenge.domain.service;
 
 import io.restassured.RestAssured;
-import io.restassured.config.HeaderConfig;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,9 +45,6 @@ class GameServiceTest {
     private static final String PLAYER_ONE_API_KEY = "player-one-key";
     private static final String API_KEY = "API-KEY";
 
-    @LocalServerPort
-    private int port;
-
     @Autowired
     private RoundRepository roundRepository;
 
@@ -57,6 +53,9 @@ class GameServiceTest {
 
     @Autowired
     private GameRepository gameRepository;
+
+    @LocalServerPort
+    private int port;
 
     @BeforeEach
     void setup() {

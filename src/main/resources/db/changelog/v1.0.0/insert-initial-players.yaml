@@ -12,6 +12,9 @@ databaseChangeLog:
               - column:
                   name: API_KEY
                   value: "player-one-key"
+              - column:
+                  name: SCORE
+                  valueNumeric: 9999
         - insert:
             tablename: PLAYER
             columns:
@@ -21,3 +24,6 @@ databaseChangeLog:
               - column:
                   name: API_KEY
                   value: "green-mario-key"
+              - column:
+                  name: SCORE
+                  valueNumeric: 1991

@@ -25,3 +25,15 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     unique: true
+              - column:
+                  name: SCORE
+                  type: INT
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: PLAYER
+            indexName: IX_PLAYER_SCORE
+            columns:
+              - column:
+                  name: SCORE

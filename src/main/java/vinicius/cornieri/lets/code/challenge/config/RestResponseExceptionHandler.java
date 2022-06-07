@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import vinicius.cornieri.lets.code.challenge.exception.BadRequestException;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.BadRequestResponseDto;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.BadRequestResponseFieldsDto;
 
