@@ -8,7 +8,7 @@ info:
 paths:
   /game/start:
     post:
-      description: Starts a new Game
+      description: Starts a new active Game. Should only be used when the player has not an active game session.
       tags:
         - Game
       responses:
@@ -17,7 +17,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GameStartResponse'
+                $ref: '#/components/schemas/CurrentGameResponse'
         '400':
           description: Invalid request
           content:
@@ -26,12 +26,30 @@ paths:
                 $ref: '#/components/schemas/BadRequestResponse'
   /game/stop:
     post:
-      description: Finishes the current Game
+      description: Finishes the current Game. Should only used when the player has an active game session.
       tags:
         - Game
       responses:
         '204':
           description: Game finished with success
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+  /game/current:
+    get:
+      description: Get the current active game.
+      tags:
+        - Game
+      responses:
+        '200':
+          description: the current active game
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentGameResponse'
         '400':
           description: Invalid request
           content:
@@ -103,7 +121,7 @@ components:
         - round_number
         - firstMovieOption
         - secondMovieOption
-    GameStartResponse:
+    CurrentGameResponse:
       type: object
       properties:
         round:

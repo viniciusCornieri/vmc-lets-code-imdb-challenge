@@ -16,6 +16,6 @@ public interface GameChooseResponseDtoMapper {
     @Mapping(target = "nextRound", source = "game.currentRound")
     @Mapping(target = "roundResult", source = "lastRound")
     @Mapping(target = "roundResult.correctAnswer", source = "correctAnswer")
-    @Mapping(target = "wasRight", source = "game.currentRound.wasAnsweredCorrectly")
+    @Mapping(target = "wasRight", source = "lastRound.wasAnsweredCorrectly")
     GameChooseResponseDto fromGameAndLastRound(Game game, Round lastRound, ChoiceDto correctAnswer);
 }

@@ -1,10 +1,12 @@
 package vinicius.cornieri.lets.code.challenge.domain.service;
 
 import io.restassured.RestAssured;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -12,12 +14,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import vinicius.cornieri.lets.code.challenge.domain.model.Game;
 import vinicius.cornieri.lets.code.challenge.domain.model.Movie;
 import vinicius.cornieri.lets.code.challenge.domain.model.Round;
 import vinicius.cornieri.lets.code.challenge.exception.ActiveGameNotFoundException;
 import vinicius.cornieri.lets.code.challenge.exception.AlreadyHaveActiveGameException;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.ChoiceDto;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.GameChooseRequestDto;
+import vinicius.cornieri.lets.code.challenge.persistence.GameRepository;
 import vinicius.cornieri.lets.code.challenge.persistence.MovieRepository;
 import vinicius.cornieri.lets.code.challenge.persistence.RoundRepository;
 
@@ -25,6 +29,7 @@ import static org.hamcrest.Matchers.blankOrNullString;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static vinicius.cornieri.lets.code.challenge.domain.service.RestResponseExceptionHandler.REQUIRED_REQUEST_BODY_IS_MISSING_MESSAGE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -35,7 +40,8 @@ class GameServiceTest {
     public static final String GAME_CHOOSE_ENDPOINT = "/game/choose";
     public static final long HIGHER_SCORE_MOVIE_ID = 12L;
     public static final long LOWER_SCORE_MOVIE_ID = 15L;
-
+    public static final String GAME_STOP_ENDPOINT = "/game/stop";
+    public static final String GAME_CURRENT_ENDPOINT = "/game/current";
 
     @LocalServerPort
     private int port;
@@ -45,6 +51,9 @@ class GameServiceTest {
 
     @Autowired
     private MovieRepository movieRepository;
+
+    @Autowired
+    private GameRepository gameRepository;
 
     @BeforeEach
     void setup() {
@@ -61,6 +70,34 @@ class GameServiceTest {
             .then()
                 .log().all()
                 .statusCode(HttpStatus.CREATED.value())
+            .and()
+                .body("round.round_number", equalTo(0))
+                .body("failures_count", equalTo(0))
+                .body("round.firstMovieOption.imdb_id", not(blankOrNullString()))
+                .body("round.firstMovieOption.title", not(blankOrNullString()))
+                .body("round.secondMovieOption.imdb_id", not(blankOrNullString()))
+                .body("round.secondMovieOption.title", not(blankOrNullString()));
+        //@formatter:on
+
+    }
+
+    @Test
+    void shouldReturnTheCurrentActiveGameAfterCallingGameCurrent() {
+        RestAssured
+            .given()
+                .post(GAME_START_ENDPOINT)
+                .then()
+            .statusCode(HttpStatus.CREATED.value())
+            .body("round.round_number", equalTo(0));
+
+
+        //@formatter:off
+        RestAssured
+            .given()
+                .get(GAME_CURRENT_ENDPOINT)
+            .then()
+                .log().all()
+                .statusCode(HttpStatus.OK.value())
             .and()
                 .body("round.round_number", equalTo(0))
                 .body("failures_count", equalTo(0))
@@ -93,8 +130,9 @@ class GameServiceTest {
 
     }
 
-    @Test
-    void shouldReturnBadRequestWhenCallingChooseWithoutAGameActive() {
+    @ParameterizedTest
+    @ValueSource(strings = {GAME_CHOOSE_ENDPOINT, GAME_STOP_ENDPOINT})
+    void shouldReturnBadRequestWhenCallingChooseOrStopWithoutAGameActive(String endpoint) {
         GameChooseRequestDto input = new GameChooseRequestDto()
             .roundNumber(0)
             .choice(ChoiceDto.FIRST);
@@ -104,7 +142,59 @@ class GameServiceTest {
                 .with()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(input)
-                .post(GAME_CHOOSE_ENDPOINT)
+                .post(endpoint)
+            .then()
+            .log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+            .and()
+                .body("message", equalTo(ActiveGameNotFoundException.ERROR_MESSAGE));
+
+        RestAssured
+            .given()
+                .get(GAME_CURRENT_ENDPOINT)
+            .then()
+                .log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+            .and()
+                .body("message", equalTo(ActiveGameNotFoundException.ERROR_MESSAGE));
+        //@formatter:on
+
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {GAME_CHOOSE_ENDPOINT, GAME_STOP_ENDPOINT})
+    void shouldReturnBadRequestWhenCallingChooseOrStopAfterGameFinishes(String endpoint) {
+        RestAssured
+            .given()
+                .post(GAME_START_ENDPOINT)
+            .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .body("round.round_number", equalTo(0));
+
+        GameChooseRequestDto input = new GameChooseRequestDto()
+            .roundNumber(0)
+            .choice(ChoiceDto.FIRST);
+
+        Game game = gameRepository.findAll().get(0);
+        game.setFinished(true);
+        gameRepository.saveAndFlush(game);
+
+        //@formatter:off
+        RestAssured
+            .given()
+            .with()
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .body(input)
+                .post(endpoint)
+            .then()
+                .log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+            .and()
+                .body("message", equalTo(ActiveGameNotFoundException.ERROR_MESSAGE));
+
+        RestAssured
+            .given()
+                .get(GAME_CURRENT_ENDPOINT)
             .then()
             .log().all()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -185,18 +275,22 @@ class GameServiceTest {
     }
 
 
-    @Test
-    void shouldReturnOkWhenChooseMovieCorrectly() {
+    @ParameterizedTest
+    @CsvSource({
+        HIGHER_SCORE_MOVIE_ID + "," + LOWER_SCORE_MOVIE_ID + ",FIRST",
+        LOWER_SCORE_MOVIE_ID + "," + HIGHER_SCORE_MOVIE_ID + ",SECOND",
+    })
+    void shouldReturnOkWhenChooseMovieCorrectly(long firstMovieId, long secondMovieId, String choice) {
         RestAssured
             .given()
                 .post(GAME_START_ENDPOINT)
             .then()
                 .statusCode(HttpStatus.CREATED.value());
 
-        forceMoviesAtRound();
+        forceMoviesAtRound(firstMovieId, secondMovieId);
 
         GameChooseRequestDto input = new GameChooseRequestDto()
-            .choice(ChoiceDto.FIRST)
+            .choice(ChoiceDto.valueOf(choice))
             .roundNumber(0);
 
         //@formatter:off
@@ -210,14 +304,121 @@ class GameServiceTest {
                 .log().all()
                 .statusCode(HttpStatus.OK.value())
             .and()
-            .body("message", containsString("Validation failed"));
+            .body("failures_count", equalTo(0))
+            .body("wasRight", equalTo(true))
+            .body("finished", equalTo(false))
+            .body("round_result.correctAnswer", equalTo(choice))
+            .body("round_result.round_number", equalTo(0))
+            .body("next_round.round_number", equalTo(1));
         //@formatter:on
     }
 
-    private void forceMoviesAtRound() {
+    @ParameterizedTest
+    @CsvSource({
+        HIGHER_SCORE_MOVIE_ID + "," + LOWER_SCORE_MOVIE_ID + ",SECOND,FIRST",
+        LOWER_SCORE_MOVIE_ID + "," + HIGHER_SCORE_MOVIE_ID + ",FIRST,SECOND",
+    })
+    void shouldReturnOkWhenChooseWrongMovie(long firstMovieId, long secondMovieId, String choice, String correctAnswer) {
+        RestAssured
+            .given()
+            .post(GAME_START_ENDPOINT)
+            .then()
+            .statusCode(HttpStatus.CREATED.value());
+
+        forceMoviesAtRound(firstMovieId, secondMovieId);
+
+        GameChooseRequestDto input = new GameChooseRequestDto()
+            .choice(ChoiceDto.valueOf(choice))
+            .roundNumber(0);
+
+        //@formatter:off
+        RestAssured
+            .given()
+            .with()
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .body(input)
+                .post(GAME_CHOOSE_ENDPOINT)
+            .then()
+                .log().all()
+                .statusCode(HttpStatus.OK.value())
+            .and()
+                .body("failures_count", equalTo(1))
+                .body("wasRight", equalTo(false))
+                .body("finished", equalTo(false))
+                .body("round_result.correctAnswer", equalTo(correctAnswer))
+                .body("round_result.round_number", equalTo(0))
+                .body("next_round.round_number", equalTo(1));
+        //@formatter:on
+    }
+
+    @Test
+    void shouldFinishGameAfterTheThirdFailure() {
+        RestAssured
+            .given()
+            .post(GAME_START_ENDPOINT)
+            .then()
+            .statusCode(HttpStatus.CREATED.value());
+
+        forceMoviesAtRound(HIGHER_SCORE_MOVIE_ID, LOWER_SCORE_MOVIE_ID);
+
+        Game game = gameRepository.findAll().get(0);
+        game.setFailuresCount(2);
+        gameRepository.saveAndFlush(game);
+
+        GameChooseRequestDto input = new GameChooseRequestDto()
+            .choice(ChoiceDto.SECOND)
+            .roundNumber(0);
+
+        //@formatter:off
+        RestAssured
+            .given()
+            .with()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .body(input)
+                .post(GAME_CHOOSE_ENDPOINT)
+            .then()
+                .log().all()
+                .statusCode(HttpStatus.OK.value())
+            .and()
+                .body("failures_count", equalTo(3))
+                .body("wasRight", equalTo(false))
+                .body("finished", equalTo(true))
+                .body("round_result.correctAnswer", equalTo("FIRST"))
+                .body("round_result.round_number", equalTo(0))
+                .body("next_round", nullValue());
+        //@formatter:on
+
+        Game updatedGame = gameRepository.findAll().get(0);
+        Assertions.assertThat(updatedGame.isFinished()).isTrue();
+        Assertions.assertThat(updatedGame.getFinishedAt()).isNotNull();
+    }
+
+    @Test
+    void shouldFinishGameAfterCallingGameStop() {
+        RestAssured
+            .given()
+            .post(GAME_START_ENDPOINT)
+            .then()
+            .statusCode(HttpStatus.CREATED.value());
+
+        //@formatter:off
+        RestAssured
+            .given()
+            .with()
+                .post(GAME_STOP_ENDPOINT)
+                .then()
+                .log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+        //@formatter:on
+        Game updatedGame = gameRepository.findAll().get(0);
+        Assertions.assertThat(updatedGame.isFinished()).isTrue();
+        Assertions.assertThat(updatedGame.getFinishedAt()).isNotNull();
+    }
+
+    private void forceMoviesAtRound(long firstMovieId, long secondMovieId) {
         Round round = roundRepository.findAll().get(0);
-        Movie firstMovie = movieRepository.findById(HIGHER_SCORE_MOVIE_ID).get();
-        Movie secondMovie = movieRepository.findById(LOWER_SCORE_MOVIE_ID).get();
+        Movie firstMovie = movieRepository.findById(firstMovieId).get();
+        Movie secondMovie = movieRepository.findById(secondMovieId).get();
         round.setFirstMovieOption(firstMovie);
         round.setSecondMovieOption(secondMovie);
         roundRepository.saveAndFlush(round);

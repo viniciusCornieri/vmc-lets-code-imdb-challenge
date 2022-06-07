@@ -1,6 +1,5 @@
 package vinicius.cornieri.lets.code.challenge.domain.service.mapper;
 
-import liquibase.pro.packaged.B;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import vinicius.cornieri.lets.code.challenge.domain.model.Game;
@@ -8,7 +7,6 @@ import vinicius.cornieri.lets.code.challenge.domain.model.Movie;
 import vinicius.cornieri.lets.code.challenge.domain.model.Round;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.ChoiceDto;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.GameChooseResponseDto;
-import vinicius.cornieri.lets.code.challenge.generated.domain.view.GameStartResponseDto;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.MovieDto;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.MovieWithRatingDto;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.RoundDto;

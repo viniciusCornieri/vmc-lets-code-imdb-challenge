@@ -4,13 +4,13 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import vinicius.cornieri.lets.code.challenge.domain.model.Game;
-import vinicius.cornieri.lets.code.challenge.generated.domain.view.GameStartResponseDto;
+import vinicius.cornieri.lets.code.challenge.generated.domain.view.CurrentGameResponseDto;
 
 @Mapper
-public interface GameStartResponseDtoMapper {
+public interface CurrentGameResponseDtoMapper {
 
-    GameStartResponseDtoMapper INSTANCE = Mappers.getMapper( GameStartResponseDtoMapper.class );
+    CurrentGameResponseDtoMapper INSTANCE = Mappers.getMapper( CurrentGameResponseDtoMapper.class );
 
     @Mapping(target = "round", source = "currentRound")
-    GameStartResponseDto fromGame(Game game);
+    CurrentGameResponseDto fromGame(Game game);
 }

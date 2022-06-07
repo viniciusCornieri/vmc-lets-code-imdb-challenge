@@ -1,26 +1,14 @@
 package vinicius.cornieri.lets.code.challenge.domain.service;
 
-import jdk.jfr.Timespan;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Recover;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import vinicius.cornieri.lets.code.challenge.domain.model.Game;
 import vinicius.cornieri.lets.code.challenge.domain.model.Movie;
 import vinicius.cornieri.lets.code.challenge.domain.model.Round;
 import vinicius.cornieri.lets.code.challenge.exception.NotFoundPossibleMoviePairException;
 import vinicius.cornieri.lets.code.challenge.persistence.RoundRepository;
-
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static vinicius.cornieri.lets.code.challenge.domain.service.MovieIdComparator.higherIdMovie;
 import static vinicius.cornieri.lets.code.challenge.domain.service.MovieIdComparator.lowerIdMovie;

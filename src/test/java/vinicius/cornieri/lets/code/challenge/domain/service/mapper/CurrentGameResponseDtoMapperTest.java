@@ -5,11 +5,11 @@ import org.junit.jupiter.api.Test;
 import vinicius.cornieri.lets.code.challenge.domain.model.Game;
 import vinicius.cornieri.lets.code.challenge.domain.model.Movie;
 import vinicius.cornieri.lets.code.challenge.domain.model.Round;
-import vinicius.cornieri.lets.code.challenge.generated.domain.view.GameStartResponseDto;
+import vinicius.cornieri.lets.code.challenge.generated.domain.view.CurrentGameResponseDto;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.MovieDto;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.RoundDto;
 
-class GameStartResponseDtoMapperTest {
+class CurrentGameResponseDtoMapperTest {
 
     public static final int FAILURES_COUNT = 2;
     public static final int ROUND_NUMBER = 12;
@@ -26,7 +26,7 @@ class GameStartResponseDtoMapperTest {
     void shouldMapGameToGameStartResponse() {
         Game game = getInputGame();
 
-        GameStartResponseDto response = GameStartResponseDtoMapper.INSTANCE.fromGame(game);
+        CurrentGameResponseDto response = CurrentGameResponseDtoMapper.INSTANCE.fromGame(game);
         RoundDto round = response.getRound();
         MovieDto firstMovieOption = round.getFirstMovieOption();
         MovieDto secondMovieOption = round.getSecondMovieOption();
