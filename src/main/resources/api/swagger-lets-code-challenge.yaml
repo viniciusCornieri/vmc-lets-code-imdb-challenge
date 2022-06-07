@@ -24,6 +24,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
+  /game/stop:
+    post:
+      description: Finishes the current Game
+      tags:
+        - Game
+      responses:
+        '204':
+          description: Game finished with success
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
   /game/choose:
     post:
       description: Make a choice beetwen the two movies which one has the higher score
@@ -130,7 +144,7 @@ components:
           maximum: 10.0
           description: The IMDB rating for the movie from 0 to 10.
           example: 6.3
-        votes:
+        num_votes:
           type: integer
           description: The number of votes that the movie have.
           example: 1387
@@ -170,8 +184,15 @@ components:
           type: integer
           description: the current failures count after this choice
           example: 2
+        finished:
+          type: boolean
+          description: indicates if the game is finished, could be because the third failure on the current game or calling /game/stop.
         round_result:
           $ref: '#/components/schemas/RoundResult'
+        next_round:
+          allOf:
+            - $ref: '#/components/schemas/Round'
+          description: The next round with the new movies to choose, it will not be present if the game had finished.
       required:
         - wasRight
         - failures_count

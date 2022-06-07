@@ -32,6 +32,9 @@ databaseChangeLog:
                   type: INT
               - column:
                   name: RATING
+                  type: NUMERIC
+              - column:
+                  name: NUM_VOTES
                   type: INT
         - createIndex:
             tableName: MOVIE

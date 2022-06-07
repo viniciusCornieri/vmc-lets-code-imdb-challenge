@@ -45,7 +45,7 @@ public class Round {
     @JoinColumn(name = "SECOND_MOVIE_OPTION_ID", nullable = false)
     private Movie secondMovieOption;
 
-    @Column(name = "WAS_ANSWERED_CORRECTLY")
+    @Column(name = "wasAnsweredCorrectly")
     private Boolean wasAnsweredCorrectly;
 
     @Override

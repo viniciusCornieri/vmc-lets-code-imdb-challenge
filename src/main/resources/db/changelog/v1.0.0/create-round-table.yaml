@@ -60,15 +60,14 @@ databaseChangeLog:
             constraintName: FK_ROUND_GAME_ID
             referencedColumnnames: ID
             referencedTableName: GAME
+  - changeSet:
+      id: create-uk-round-first-second
+      author: vmc
+      changes:
         - addUniqueConstraint:
             columnNames: GAME_ID, FIRST_MOVIE_OPTION_ID, SECOND_MOVIE_OPTION_ID
-            constraintName: UK_ROUND_GAME_FIRST_SECOND
+            constraintName: UK_ROUND_FIRST_SECOND
             tableName: ROUND
-        - addUniqueConstraint:
-            columnNames: GAME_ID, SECOND_MOVIE_OPTION_ID, FIRST_MOVIE_OPTION_ID
-            constraintName: UK_ROUND_GAME_SECOND_FIRST
-            tableName: ROUND
-
   - changeSet:
       id: add-current-round-id-column-at-game
       author: vmc

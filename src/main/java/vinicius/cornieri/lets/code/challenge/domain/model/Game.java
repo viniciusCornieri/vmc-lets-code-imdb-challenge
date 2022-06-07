@@ -49,6 +49,10 @@ public class Game {
     @ToString.Exclude
     private Round currentRound;
 
+    public void incrementFailures() {
+        this.failuresCount++;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

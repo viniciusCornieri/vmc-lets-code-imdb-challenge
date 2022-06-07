@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -43,11 +44,19 @@ public class Movie {
 
     @CsvBindByPosition(position = 3, required = true)
     @Column(name = "RATING")
-    private int rating;
+    private BigDecimal rating;
 
-    @CsvBindByPosition(position = 4)
+    @CsvBindByPosition(position = 4, required = true)
+    @Column(name = "NUM_VOTES")
+    private BigDecimal numVotes;
+
+    @CsvBindByPosition(position = 5)
     @Column(name = "RELEASE_YEAR")
     private int year;
+
+    public BigDecimal getScore() {
+        return rating.multiply(numVotes);
+    }
 
     @Override
     public boolean equals(Object o) {

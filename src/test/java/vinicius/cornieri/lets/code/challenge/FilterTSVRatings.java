@@ -58,7 +58,7 @@ public class FilterTSVRatings {
             .build();
 
         List<Movie> values = movies.values().stream()
-            .filter(m -> m.getRating() > 0)
+            .filter(m -> m.getRating() != null)
             .collect(Collectors.toList());
         sbc.write(new ArrayList<>(values));
         writer.close();
@@ -76,16 +76,24 @@ public class FilterTSVRatings {
             Movie movie = movies.get(imdbId);
             if (movie != null) {
                 String ratingStr = line[1];
-                if (StringUtils.isNotBlank(ratingStr) && ratingStr.matches("[0-9]+(\\.[0-9]+)?")) {
-                    int rating = new BigDecimal(ratingStr).multiply(BigDecimal.TEN).intValue();
-                    movie.setRating(rating);
-                } else {
-                    log.error("Could not parse rating {} for movie {}", ratingStr, imdbId);
-                }
+                BigDecimal rating = toBigDecimal(imdbId, ratingStr);
+                movie.setRating(rating);
+
+                String numVotesStr = line[2];
+                BigDecimal numVotes = toBigDecimal(imdbId, numVotesStr);
+                movie.setNumVotes(numVotes);
             }
             line = csvReader.readNext();
         }
         csvReader.close();
+    }
+
+    private static BigDecimal toBigDecimal(String imdbId, String numericStr) {
+        if (StringUtils.isNotBlank(numericStr) && numericStr.matches("[0-9]+(\\.[0-9]+)?")) {
+            return new BigDecimal(numericStr);
+        }
+        log.error("Could not parse rating {} for movie {}", numericStr, imdbId);
+        return null;
     }
 
     @SneakyThrows
