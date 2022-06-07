@@ -77,8 +77,10 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
 
         if ("API-KEY".equals(ex.getHeaderName())) {
             return new ResponseEntity<>(
-                new BadRequestResponseDto().message("Need to inform a valid Player API-KEY header to access the game"),
-                HttpStatus.UNAUTHORIZED);
+                new BadRequestResponseDto()
+                    .message("Need to inform a valid Player API-KEY header to access the game")
+                    .status(HttpStatus.UNAUTHORIZED.value())
+                , HttpStatus.UNAUTHORIZED);
         }
 
         return buildBadRequestEntity(null, "Missing required header " + ex.getHeaderName(), null);

@@ -4,12 +4,10 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.SneakyThrows;
 
-import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class CSVFactory {
 
@@ -27,12 +25,8 @@ public class CSVFactory {
             .build();
     }
 
-    public static Reader buildReader(String path) throws IOException, URISyntaxException {
-        return Files.newBufferedReader(buildPath(path));
+    public static Reader buildReader(String path) {
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
+        return new BufferedReader(new InputStreamReader(is));
     }
-
-    public static Path buildPath(String path) throws URISyntaxException {
-        return Paths.get(ClassLoader.getSystemResource(path).toURI());
-    }
-
 }
