@@ -55,7 +55,7 @@ class PlayerServiceTest {
     @Test
     void shouldReturnCreatedWhenCreatingANewPlayer() {
         String someNickname = "some nickname";
-        PlayerDto input = new PlayerDto().nickname(someNickname);
+        PlayerDto input = new PlayerDto().username(someNickname);
 
         //@formatter:off
         RestAssured
@@ -76,7 +76,7 @@ class PlayerServiceTest {
     @Test
     void shouldReturnBadRequestWhenCreatingAPlayerWithDuplicatedNickname() {
         String playerOneNickname = "Ready Player One";
-        PlayerDto input = new PlayerDto().nickname(playerOneNickname);
+        PlayerDto input = new PlayerDto().username(playerOneNickname);
 
         //@formatter:off
         RestAssured
@@ -97,7 +97,7 @@ class PlayerServiceTest {
     @ValueSource(strings = {"a", "ab", STRING_WITH_101_CHARS})
     @NullAndEmptySource
     void shouldReturnBadRequestWhenCreatingAPlayerWithInvalidNickname(String nickname) {
-        PlayerDto input = new PlayerDto().nickname(nickname);
+        PlayerDto input = new PlayerDto().username(nickname).password("123456");
 
         //@formatter:off
         RestAssured
@@ -111,7 +111,7 @@ class PlayerServiceTest {
                 .statusCode(HttpStatus.BAD_REQUEST.value())
             .and()
                 .body("message", containsString("Validation failed:"))
-                .body("fields[0].field", equalTo("nickname"));
+                .body("fields[0].field", equalTo("username"));
         //@formatter:on
     }
 }

@@ -12,5 +12,5 @@ databaseChangeLog:
       file: "create-round-table.yaml"
       relativeToChangelogFile: true
   - include:
-      file: "insert-initial-players.yaml"
+      file: "create-player-roles-table.yaml"
       relativeToChangelogFile: true

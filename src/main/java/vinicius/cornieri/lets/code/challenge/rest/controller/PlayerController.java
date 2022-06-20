@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vinicius.cornieri.lets.code.challenge.domain.service.PlayerService;
 import vinicius.cornieri.lets.code.challenge.generated.api.PlayerApi;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.PlayerDto;
-import vinicius.cornieri.lets.code.challenge.generated.domain.view.PlayerWithApikeyDto;
+import vinicius.cornieri.lets.code.challenge.generated.domain.view.PlayerResponseDto;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.PlayerWithScoreDto;
 
 import java.util.List;
@@ -24,8 +24,8 @@ public class PlayerController implements PlayerApi {
     }
 
     @Override
-    public ResponseEntity<PlayerWithApikeyDto> playerPost(PlayerDto playerDto) {
-        return new ResponseEntity<>(playerService.createNewPlayer(playerDto.getNickname()), HttpStatus.CREATED);
+    public ResponseEntity<PlayerResponseDto> playerPost(PlayerDto playerDto) {
+        return new ResponseEntity<>(playerService.createNewPlayer(playerDto.getUsername(), playerDto.getPassword()), HttpStatus.CREATED);
     }
 
 }

@@ -17,24 +17,24 @@ public class GameController implements GameApi {
     private final GameService gameService;
 
     @Override
-    public ResponseEntity<CurrentGameResponseDto> gamePost(String apiKey) {
-        return new ResponseEntity<>(gameService.startGame(apiKey), HttpStatus.CREATED);
+    public ResponseEntity<CurrentGameResponseDto> gamePost() {
+        return new ResponseEntity<>(gameService.startGame(), HttpStatus.CREATED);
     }
 
     @Override
-    public ResponseEntity<GameChooseResponseDto> gameChoosePost(String apiKey, GameChooseRequestDto gameChooseRequestDto) {
-        return ResponseEntity.ok(gameService.processChoice(apiKey, gameChooseRequestDto));
+    public ResponseEntity<GameChooseResponseDto> gameChoosePost(GameChooseRequestDto gameChooseRequestDto) {
+        return ResponseEntity.ok(gameService.processChoice(gameChooseRequestDto));
     }
 
     @Override
-    public ResponseEntity<Void> gameStopPost(String apiKey) {
-        gameService.stopGame(apiKey);
+    public ResponseEntity<Void> gameStopPost() {
+        gameService.stopGame();
         return ResponseEntity.noContent().build();
     }
 
     @Override
-    public ResponseEntity<CurrentGameResponseDto> gameGet(String apiKey) {
-        return ResponseEntity.ok(gameService.getCurrentActiveGame(apiKey));
+    public ResponseEntity<CurrentGameResponseDto> gameGet() {
+        return ResponseEntity.ok(gameService.getCurrentActiveGame());
     }
 
 }

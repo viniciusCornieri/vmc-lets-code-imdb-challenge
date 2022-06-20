@@ -35,8 +35,8 @@ public class GameService {
     @Value("${game.maximum-failure-allowed:3}")
     private int maximumFailureAllowed;
 
-    public CurrentGameResponseDto startGame(String apiKey) {
-        Player activePlayer = getCurrentPlayer(apiKey);
+    public CurrentGameResponseDto startGame() {
+        Player activePlayer = getCurrentPlayer();
         if (playerHasActiveGame(activePlayer)) {
             log.info("Player {} has already an active game", activePlayer);
             throw new AlreadyHaveActiveGameException();
@@ -51,13 +51,13 @@ public class GameService {
         return CurrentGameResponseDtoMapper.INSTANCE.fromGame(newGame);
     }
 
-    public CurrentGameResponseDto getCurrentActiveGame(String apikey) {
-        Game currentGame = getPlayerCurrentGame(apikey);
+    public CurrentGameResponseDto getCurrentActiveGame() {
+        Game currentGame = getPlayerCurrentGame();
         return CurrentGameResponseDtoMapper.INSTANCE.fromGame(currentGame);
     }
 
-    public GameChooseResponseDto processChoice(String apiKey, GameChooseRequestDto choice) {
-        Game currentGame = getPlayerCurrentGame(apiKey);
+    public GameChooseResponseDto processChoice(GameChooseRequestDto choice) {
+        Game currentGame = getPlayerCurrentGame();
 
         Round lastRound = currentGame.getCurrentRound();
         if (choice.getRoundNumber() != lastRound.getRoundNumber()) {
@@ -80,8 +80,8 @@ public class GameService {
         return GameChooseResponseDtoMapper.INSTANCE.fromGameAndLastRound(currentGame, lastRound, correctAnswer);
     }
 
-    public void stopGame(String apiKey) {
-        Game currentGame = getPlayerCurrentGame(apiKey);
+    public void stopGame() {
+        Game currentGame = getPlayerCurrentGame();
         currentGame.incrementFailures();
         currentGame.getCurrentRound().setWasAnsweredCorrectly(false);
         finishGame(currentGame);
@@ -95,8 +95,8 @@ public class GameService {
         playerService.score(currentGame);
     }
 
-    private Game getPlayerCurrentGame(String apiKey) {
-        Player activePlayer = getCurrentPlayer(apiKey);
+    private Game getPlayerCurrentGame() {
+        Player activePlayer = getCurrentPlayer();
         if (!playerHasActiveGame(activePlayer)) {
             log.info("Player {} has not an active game to choose", activePlayer);
             throw new ActiveGameNotFoundException();
@@ -120,8 +120,8 @@ public class GameService {
         return activePlayer.getCurrentGame() != null && !activePlayer.getCurrentGame().isFinished();
     }
 
-    private Player getCurrentPlayer(String apiKey){
-        return playerService.findCurrentPlayer(apiKey);
+    private Player getCurrentPlayer(){
+        return playerService.findCurrentPlayer("player_one");
     }
 
 }

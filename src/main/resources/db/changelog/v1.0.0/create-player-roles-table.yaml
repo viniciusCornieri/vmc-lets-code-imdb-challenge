@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-player-role-table
+      author: vmc
+      changes:
+        - createTable:
+            tableName: PLAYER_ROLE
+            columns:
+              - column:
+                  name: ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primarykey: true
+                    nullable: false
+              - column:
+                  name: PLAYER_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ROLE
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: PLAYER_ID
+            baseTableName: PLAYER_ROLE
+            constraintName: FK_PLAYER_ROLE
+            referencedColumnNames: ID
+            referencedTableName: PLAYER
+        - createIndex:
+            tableName: PLAYER_ROLE
+            name: IX_PLAYER_ROLE
+            columns:
+              - column:
+                  name: ROLE
+              - column:
+                  name: PLAYER_ID

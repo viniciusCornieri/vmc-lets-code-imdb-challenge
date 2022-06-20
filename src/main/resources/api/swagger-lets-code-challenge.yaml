@@ -11,10 +11,8 @@ paths:
       description: Starts a new active Game. Should only be used when the player has not an active game session.
       tags:
         - Game
-      parameters:
-        - $ref: '#/components/parameters/apiKeyHeader'
       responses:
-        '203':
+        '201':
           description: Created new game and return the first round of the game with the movies to choose
           content:
             application/json:
@@ -26,14 +24,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
-        '401':
-          description: Non authorized use of api, verify your API_KEY header.
     get:
       description: Get the current active game.
       tags:
         - Game
-      parameters:
-        - $ref: '#/components/parameters/apiKeyHeader'
       responses:
         '200':
           description: the current active game
@@ -47,15 +41,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
-        '401':
-          description: Non authorized use of api, verify your API_KEY header.
   /game/stop:
     post:
       description: Finishes the current Game. Should only used when the player has an active game session.
       tags:
         - Game
-      parameters:
-        - $ref: '#/components/parameters/apiKeyHeader'
       responses:
         '204':
           description: Game finished with success
@@ -65,15 +55,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
-        '401':
-          description: Non authorized use of api, verify your API_KEY header.
   /game/choose:
     post:
       description: Make a choice beetwen the two movies which one has the higher score
       tags:
         - Game
-      parameters:
-        - $ref: '#/components/parameters/apiKeyHeader'
       requestBody:
         required: true
         content:
@@ -93,8 +79,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
-        '401':
-          description: Non authorized use of api, verify your API_KEY header.
   /player/leaderboard:
     get:
       description: Show the current players leaderboard order by the higher player score decrescent
@@ -109,7 +93,7 @@ paths:
                 $ref: '#/components/schemas/PlayerLeaderboard'
   /player:
     post:
-      description: creates a new player and get an API-KEY
+      description: creates a new player and get an
       tags:
         - Player
       requestBody:
@@ -119,12 +103,12 @@ paths:
             schema:
               $ref: '#/components/schemas/Player'
       responses:
-        '203':
+        '201':
           description: The player with the API-KEY.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PlayerWithApikey'
+                $ref: '#/components/schemas/PlayerResponse'
         '400':
           description: Invalid request
           content:
@@ -133,15 +117,6 @@ paths:
                 $ref: '#/components/schemas/BadRequestResponse'
 
 components:
-  parameters:
-    apiKeyHeader:
-      name: API-KEY
-      description: An Player unique key used to authenticate on the game apis.
-      in: header
-      schema:
-        type: string
-        example: "dab41a9e-8d8d-4299-8f62-3e3566b28f04"
-      required: true
   schemas:
     Movie:
       type: object
@@ -186,6 +161,10 @@ components:
       properties:
         round:
           $ref: '#/components/schemas/Round'
+        player:
+          type: string
+          example: "user"
+          maxLength: 100
         failures_count:
           type: integer
           example: 0
@@ -258,6 +237,10 @@ components:
           type: boolean
           description: indicates if the player choose the movie correctly
           example: false
+        player:
+          type: string
+          example: player_one
+          maxLength: 100
         failures_count:
           type: integer
           description: the current failures count after this choice
@@ -284,22 +267,23 @@ components:
     Player:
       type: object
       properties:
-        nickname:
+        username:
           $ref: '#/components/schemas/Nickname'
+        password:
+          type: string
+          description: player password
+          maxLength: 20
+          minLength: 6
       required:
-        - nickname
-    PlayerWithApikey:
+        - username
+        - password
+    PlayerResponse:
       type: object
       properties:
-        nickname:
+        username:
           $ref: '#/components/schemas/Nickname'
-        api-key:
-          type: string
-          maxLength: 50
-          example: "dab41a9e-8d8d-4299-8f62-3e3566b28f04"
       required:
         - nickname
-        - api-key
     PlayerWithScore:
       type: object
       properties:

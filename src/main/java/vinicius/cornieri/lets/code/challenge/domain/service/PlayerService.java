@@ -3,37 +3,47 @@ package vinicius.cornieri.lets.code.challenge.domain.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vinicius.cornieri.lets.code.challenge.domain.model.Game;
 import vinicius.cornieri.lets.code.challenge.domain.model.Player;
 import vinicius.cornieri.lets.code.challenge.exception.InvalidNicknameException;
 import vinicius.cornieri.lets.code.challenge.exception.PlayerNotFoundException;
-import vinicius.cornieri.lets.code.challenge.generated.domain.view.PlayerWithApikeyDto;
+import vinicius.cornieri.lets.code.challenge.generated.domain.view.PlayerResponseDto;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.PlayerWithScoreDto;
 import vinicius.cornieri.lets.code.challenge.persistence.PlayerRepository;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class PlayerService {
 
+    public static final String DEFAULT_PLAYER_ROLE = "GAME";
     private final PlayerRepository playerRepository;
 
-    public PlayerWithApikeyDto createNewPlayer(String nickname) {
-        if (playerRepository.existsByNickname(nickname)) {
-            throw new InvalidNicknameException(nickname);
+    @Transactional
+    public PlayerResponseDto createNewPlayer(String username, String password) {
+        return createNewPlayer(username, password, DEFAULT_PLAYER_ROLE);
+    }
+
+    public PlayerResponseDto createNewPlayer(String username, String password, String role) {
+        if (playerRepository.existsByUsername(username)) {
+            throw new InvalidNicknameException(username);
         }
 
         Player player = new Player();
-        player.setNickname(nickname);
-        player.setApiKey(UUID.randomUUID().toString());
+        player.setUsername(username);
+        player.setPassword(encode(password));
+        player.addNewRole(role);
         playerRepository.saveAndFlush(player);
 
-        return new PlayerWithApikeyDto()
-            .apiKey(player.getApiKey())
-            .nickname(player.getNickname());
+        return new PlayerResponseDto()
+            .username(player.getUsername());
+    }
+
+    private String encode(String password) {
+        return password;
     }
 
     public void updatePlayerCurrentGame(Player player, Game game) {
@@ -41,8 +51,8 @@ public class PlayerService {
         playerRepository.saveAndFlush(player);
     }
 
-    public Player findCurrentPlayer(String apiKey) {
-        return playerRepository.findByApiKey(apiKey).orElseThrow(() -> new PlayerNotFoundException(apiKey));
+    public Player findCurrentPlayer(String username) {
+        return playerRepository.findByUsername(username).orElseThrow(() -> new PlayerNotFoundException(username));
     }
 
     public List<PlayerWithScoreDto> getLeaderboard() {
@@ -51,7 +61,7 @@ public class PlayerService {
     }
 
     private static PlayerWithScoreDto toPlayerDto(Player player) {
-        return new PlayerWithScoreDto().nickname(player.getNickname()).score(player.getScore());
+        return new PlayerWithScoreDto().nickname(player.getUsername()).score(player.getScore());
     }
 
     public void score(Game currentGame) {
