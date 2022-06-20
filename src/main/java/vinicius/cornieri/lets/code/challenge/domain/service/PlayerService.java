@@ -2,6 +2,7 @@ package vinicius.cornieri.lets.code.challenge.domain.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vinicius.cornieri.lets.code.challenge.domain.model.Game;
@@ -21,6 +22,7 @@ public class PlayerService {
 
     public static final String DEFAULT_PLAYER_ROLE = "GAME";
     private final PlayerRepository playerRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public PlayerResponseDto createNewPlayer(String username, String password) {
@@ -43,7 +45,7 @@ public class PlayerService {
     }
 
     private String encode(String password) {
-        return password;
+        return passwordEncoder.encode(password);
     }
 
     public void updatePlayerCurrentGame(Player player, Game game) {

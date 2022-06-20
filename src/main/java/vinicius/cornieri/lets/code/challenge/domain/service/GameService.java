@@ -3,16 +3,21 @@ package vinicius.cornieri.lets.code.challenge.domain.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vinicius.cornieri.lets.code.challenge.domain.model.Game;
 import vinicius.cornieri.lets.code.challenge.domain.model.Player;
+import vinicius.cornieri.lets.code.challenge.domain.model.PlayerPrincipalDetails;
 import vinicius.cornieri.lets.code.challenge.domain.model.Round;
 import vinicius.cornieri.lets.code.challenge.domain.service.mapper.CurrentGameResponseDtoMapper;
 import vinicius.cornieri.lets.code.challenge.domain.service.mapper.GameChooseResponseDtoMapper;
 import vinicius.cornieri.lets.code.challenge.exception.ActiveGameNotFoundException;
 import vinicius.cornieri.lets.code.challenge.exception.AlreadyHaveActiveGameException;
 import vinicius.cornieri.lets.code.challenge.exception.InvalidRoundNumberException;
+import vinicius.cornieri.lets.code.challenge.exception.PlayerNotFoundException;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.ChoiceDto;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.CurrentGameResponseDto;
 import vinicius.cornieri.lets.code.challenge.generated.domain.view.GameChooseRequestDto;
@@ -26,6 +31,7 @@ import java.time.ZonedDateTime;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional
+@PreAuthorize("hasAuthority('GAME')")
 public class GameService {
 
     private final RoundService roundService;
@@ -121,7 +127,13 @@ public class GameService {
     }
 
     private Player getCurrentPlayer(){
-        return playerService.findCurrentPlayer("player_one");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof PlayerPrincipalDetails) {
+            return ((PlayerPrincipalDetails) principal).getPlayer();
+        }
+
+        throw new PlayerNotFoundException(authentication.getName());
     }
 
 }
